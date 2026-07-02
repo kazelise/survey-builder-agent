@@ -1,0 +1,16 @@
+{
+  "name": "handbook_platform_styles_en",
+  "category": "handbook_rag",
+  "lang": "en",
+  "instruction": "What platform-style presentations can feed posts use? Just answer the question from the docs — do not create or change anything.",
+  "mock_script": [
+    {"tool_use": [{"name": "search_handbook", "input": {"query": "platform style presentation feed posts UI"}}]},
+    {"final": "According to the handbook, posts render in a social-feed presentation whose platform style is chosen per survey at creation time; display fields (title, image, source, counters) can be overridden per post. Nothing was created or changed."}
+  ],
+  "expected_sequence": ["search_handbook"],
+  "terminal_assert": {
+    "reason": "done",
+    "no_mutating_calls": true,
+    "final_text_contains_any": ["style", "platform"]
+  }
+}

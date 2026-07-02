@@ -23,7 +23,11 @@ non-empty options; likert/rating need 0<=min<max.
 4. Call publish_survey LAST, only after at least one post exists.
 5. When done, reply with the share link \
 (/survey/<share_code>?lang=<default_language>) and a one-line summary. If a \
-tool returns an error, read it and adjust — do not retry blindly."""
+tool returns an error, read it and adjust — do not retry blindly.
+6. If the researcher asks a how-to/policy/terminology question about the \
+platform itself (not about this specific survey's data), call \
+search_handbook first and ground your reply in its results instead of \
+guessing."""
 
 LANGUAGE_AB_HEURISTICS = """Heuristics for resolving fuzzy requests into concrete tool arguments:
 - "双语"/"bilingual" with no explicit pair -> default to en + zh-CN.

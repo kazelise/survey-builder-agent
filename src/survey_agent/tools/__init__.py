@@ -8,9 +8,9 @@ tool gets defined twice.
 
 from __future__ import annotations
 
-from . import content, survey
+from . import content, handbook, survey
 from .schema import ToolSpec
 
-TOOLS: list[ToolSpec] = [*survey.TOOLS, *content.TOOLS]
+TOOLS: list[ToolSpec] = [*survey.TOOLS, *content.TOOLS, *handbook.TOOLS]
 
 __all__ = ["TOOLS"]

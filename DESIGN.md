@@ -13,7 +13,7 @@ A researcher types one natural-language sentence (中/英) — e.g. *"帮我建�
 Design pillars, each defended in its own section:
 
 1. **No framework.** Anthropic Python SDK directly (`base_url` + `model` overridable for future compatible endpoints), `httpx` for the tool layer. §4, §5.
-2. **Minimalist (badlogic/pi philosophy):** 12 tools, short system prompt, one explicit readable loop. §6, §7.
+2. **Minimalist (badlogic/pi philosophy):** 13 tools (12 platform API + 1 local RAG handbook search), short system prompt, one explicit readable loop. §6, §7.
 3. **`--mock` mode is first-class:** a `MockModel` replays scripted `tool_use` decisions; the tool layer still fires real HTTP. Enables offline/CI/regression without an API key (env has no `ANTHROPIC_API_KEY`). §8.
 4. **Full-run trace:** JSONL per run — per-round model-input digest, tool call + result digest, token usage, latency, estimated cost. §9.
 5. **Robust failure handling:** HTTP retry w/ exponential backoff, tool-result truncation, context-window trimming, model-side degradation path. §10.
@@ -198,7 +198,7 @@ Language/AB heuristics (bilingual detection, "点赞/likes" → group_overrides)
 
 ---
 
-## 7. Tool catalog (12 — few and precise)
+## 7. Tool catalog (13 — few and precise)
 
 | # | Tool | Input (abridged) | Backend call |
 |---|---|---|---|
@@ -214,6 +214,7 @@ Language/AB heuristics (bilingual detection, "点赞/likes" → group_overrides)
 | 10 | `publish_survey` | survey_id | `POST /surveys/{id}/publish` |
 | 11 | `list_posts` | survey_id, limit?, offset? | `GET …/posts` |
 | 12 | `get_share_link` | survey_id, language? | (local) builds `/survey/{share_code}?lang=…` from RunContext |
+| 13 | `search_handbook` | query, top_k? | (local) RAG over `docs/` + `docs-site/` handbook: BM25 always; + Ollama `bge-m3` hybrid fused via RRF when reachable (see `rag/`) |
 
 Why not more: translation import/export, analytics, close/reopen are out of the core build chain — exposing them would dilute the model's tool-selection accuracy. They can be added later as a second toolset gated behind a flag.
 
@@ -273,7 +274,7 @@ Cost is computed from a price table in `config.py` keyed by model id (`opus-4-8:
 - `mcp_tools()` iterates the same specs and calls `@mcp.tool()` with the spec's name/description/schema, wrapping the identical `handler(client, args)`.
 - `test_schema_parity.py` asserts the two renderings expose the same names + input schemas, so they can't drift.
 
-The MCP server constructs its own `CS14Client` (creds from env) and runs over stdio (`uv run survey-mcp`). Result: any MCP-capable host (Claude Desktop, another agent) gets the exact same 12 tools, backed by the same handlers and the same backend, with zero duplicated schema.
+The MCP server constructs its own `CS14Client` (creds from env) and runs over stdio (`uv run survey-mcp`). Result: any MCP-capable host (Claude Desktop, another agent) gets the exact same 13 tools, backed by the same handlers and the same backend, with zero duplicated schema.
 
 ---
 

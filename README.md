@@ -18,7 +18,7 @@ Agent 解析意图（语言、A/B 分组、问卷风格等）
 ### 项目特性
 - **独立 uv 项目**：仅通过 HTTP 调用 cs14 后端，从不导入 backend 代码
 - **无框架**：使用 Anthropic Python SDK 和 `httpx`，可配置 `base_url` + `model` 支持兼容端点
-- **极简工具层**：仅 12 个精准工具，短系统提示，单一显式循环（~120 行代码）
+- **极简工具层**：13 个精准工具（12 个平台 API 工具 + 1 个 RAG 手册检索），短系统提示，单一显式循环（~120 行代码）
 - **--mock 模式**：无 API key 也能运行，用脚本重放模型决策，工具层仍调真实 HTTP（CI/测试友好）
 - **完整追踪**：每次运行生成 JSONL 文件，记录每一轮的模型输入、工具调用、令牌使用、成本估算
 - **健壮的失败处理**：HTTP 重试 + 指数退避、工具结果截断、上下文窗口修剪、模型侧降级路径
@@ -63,10 +63,11 @@ Agent 解析意图（语言、A/B 分组、问卷风格等）
                      │
         ┌────────────▼────────────┐
         │  Tool Handlers          │
-        │  (12 tools)             │
+        │  (13 tools)             │
         │  ├─ survey.py           │
         │  ├─ content.py          │
-        │  └─ auth.py             │
+        │  ├─ auth.py             │
+        │  └─ handbook.py (RAG)   │
         └────────────┬────────────┘
                      │
              ┌───────▼────────┐
@@ -145,7 +146,7 @@ uv run survey-agent "..." --base-url https://my-proxy/v1 --model some-model
 - `ANTHROPIC_API_KEY` — Anthropic API 密钥（或 `ant auth login`）
 - `ANTHROPIC_BASE_URL` — 覆盖 API 端点（默认 `https://api.anthropic.com/v1`）
 - `MODEL` — 默认模型 ID（默认 `claude-opus-4-8`）
-- `CS14_BASE_URL` — cs14 后端 URL（默认 `http://localhost:8000`）
+- `CS14_BASE_URL` — cs14 后端 API 根（默认 `http://localhost:8000/api/v1`，注意必须带 `/api/v1` 前缀）
 - `CS14_EMAIL` — 研究者邮箱（默认 `cs14.demo@example.com`）
 - `CS14_PASSWORD` — 研究者密码（默认 `demo_password`）
 
@@ -167,7 +168,7 @@ Agent loop 只需 ~120 行代码，自己写比用框架更清晰、更容易测
 
 ---
 
-### 问 2：为什么工具数量恰好是 12 个？工具怎么选、怎么分组？
+### 问 2：为什么核心工具是 12 个、总共 13 个？工具怎么选、怎么分组？
 
 **答：**
 
@@ -184,11 +185,26 @@ Agent loop 只需 ~120 行代码，自己写比用框架更清晰、更容易测
 - `POST /surveys/{id}/publish` → `publish_survey`（终态）
 - `GET /surveys/{id}/posts` → `list_posts`
 - 本地生成 → `get_share_link`（构造最终分享链接）
+- 本地检索 → `search_handbook`（RAG：BM25 + bge-m3 混合检索平台手册，带来源引用，见问 2b）
 
 **分组原则**：
-1. **3 个工具大类**：`tools/survey.py`（问卷元数据）、`tools/content.py`（内容构建）、`tools/auth.py`（引导）。
+1. **4 个工具模块**：`tools/survey.py`（问卷元数据）、`tools/content.py`（内容构建）、`tools/auth.py`（引导）、`tools/handbook.py`（RAG 手册检索）。
 2. **每个工具的 schema 都是严格的**：`additionalProperties:false`，枚举值固定（平台风格、问题类型、语言代码），让 API 错误成为编译期（handler 预检），不是运行期。
 3. **为什么不更多**：翻译导入导出、分析、关闭/重开都在核心构建链外，暴露它们会稀释模型的工具选择精度。可后续在 `--advanced` 标志后面加。
+
+---
+
+### 问 2b：`search_handbook` 的 RAG 检索是怎么实现的？
+
+**答：**
+
+延续"无框架"原则，检索层零第三方依赖（不用 rank_bm25 / faiss / numpy）：
+
+- **语料与索引**：`scripts/build_handbook_index.py` 把 `docs/*.md` 与 `docs-site/docs/**/*.md` 按标题层级切成约 193 个 chunk，落盘 `data/handbook_index.json`（入库）；BM25 统计在加载时于内存重建（几百个短 chunk 的分词是微秒级，不值得持久化倒排状态）。
+- **双路检索 + RRF 融合**：BM25（纯 Python 实现）永远可用；本地 Ollama `bge-m3` embedding 可达时走 hybrid，两路结果用 Reciprocal Rank Fusion 融合——只比较名次不比较分数，避免 BM25 分数与余弦相似度量纲不可比的问题。
+- **优雅降级**：embedding 索引未构建 / Ollama 不可达 / embedding 调用中途失败，一律降级为 BM25-only 并在工具结果里带 `note` 说明原因——检索工具绝不因语义路不可用而失败。
+- **来源引用**：每条结果返回 `source_file + heading + snippet + score`，模型回答平台问题时可标注出处（系统提示第 6 条要求先查手册再回答，不许瞎猜）。
+- **embedding 文件不入库**：`data/handbook_embeddings.json` 是环境依赖的派生产物（本机 Ollama 生成，`--embed` 重建），已 gitignore；入库的 BM25 索引才是"在任何机器上都能跑"的保底路径。
 
 ---
 
@@ -409,7 +425,7 @@ uv run survey-agent "做一个Likert量表问卷，中英双语" \
 ### 例 4：MCP 服务器
 ```bash
 uv run survey-mcp
-# 在另一个终端：Claude Desktop 或其他 MCP 客户端可连接并使用这 12 个工具
+# 在另一个终端：Claude Desktop 或其他 MCP 客户端可连接并使用这 13 个工具
 ```
 
 ### 例 5：评估

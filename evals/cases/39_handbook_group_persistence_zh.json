@@ -1,0 +1,16 @@
+{
+  "name": "handbook_group_persistence_zh",
+  "category": "handbook_rag",
+  "lang": "zh",
+  "instruction": "参与者中途关掉标签页再回来，A/B 分组会不会变？查手册回答就行。",
+  "mock_script": [
+    {"tool_use": [{"name": "search_handbook", "input": {"query": "participant group assignment persist tab close resume 分组保持"}}]},
+    {"final": "根据手册：参与者进入时分配到实验组，分组在关闭标签页/断线重连后保持不变（token 绑定的续答机制），不会重新随机分组。"}
+  ],
+  "expected_sequence": ["search_handbook"],
+  "terminal_assert": {
+    "reason": "done",
+    "no_mutating_calls": true,
+    "final_text_contains_any": ["分组"]
+  }
+}

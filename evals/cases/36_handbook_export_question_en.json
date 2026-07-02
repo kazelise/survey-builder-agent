@@ -1,0 +1,16 @@
+{
+  "name": "handbook_export_question_en",
+  "category": "handbook_rag",
+  "lang": "en",
+  "instruction": "How do researchers export participant data from the platform? Answer from the handbook, don't touch any survey.",
+  "mock_script": [
+    {"tool_use": [{"name": "search_handbook", "input": {"query": "export participant data CSV JSON analytics"}}]},
+    {"final": "Per the handbook (researcher export docs): you can export participant data as CSV or JSON from the analytics page, with filters for group, language, completion status and calibration. No survey was modified."}
+  ],
+  "expected_sequence": ["search_handbook"],
+  "terminal_assert": {
+    "reason": "done",
+    "no_mutating_calls": true,
+    "final_text_contains_any": ["export", "CSV"]
+  }
+}

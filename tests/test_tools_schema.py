@@ -12,15 +12,15 @@ from survey_agent.tools import TOOLS
 from survey_agent.tools.schema import anthropic_tools
 
 
-def test_exactly_twelve_tools_matching_design_catalog():
+def test_exactly_thirteen_tools_matching_design_catalog():
     names = [t.name for t in TOOLS]
-    assert len(names) == 12
-    assert len(set(names)) == 12  # no duplicates
+    assert len(names) == 13
+    assert len(set(names)) == 13  # no duplicates
     expected = {
         "create_survey", "update_survey", "get_survey", "list_surveys",
         "add_post", "update_post_display", "add_comment",
         "add_post_question", "add_survey_question", "publish_survey",
-        "list_posts", "get_share_link",
+        "list_posts", "get_share_link", "search_handbook",
     }
     assert set(names) == expected
 

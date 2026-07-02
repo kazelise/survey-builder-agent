@@ -1,0 +1,16 @@
+{
+  "name": "handbook_calibration_privacy_zh",
+  "category": "handbook_rag",
+  "lang": "zh",
+  "instruction": "平台的摄像头校准功能会不会保存参与者的原始视频？请先查平台手册再回答，不要改动任何问卷。",
+  "mock_script": [
+    {"tool_use": [{"name": "search_handbook", "input": {"query": "webcam calibration 摄像头校准 原始视频 隐私 privacy"}}]},
+    {"final": "根据平台手册（校准与隐私章节）：摄像头校准只在浏览器端产生数值化的注意力/视线质量信号，原始视频不会被保存或上传。未对任何问卷做改动。"}
+  ],
+  "expected_sequence": ["search_handbook"],
+  "terminal_assert": {
+    "reason": "done",
+    "no_mutating_calls": true,
+    "final_text_contains_any": ["视频", "校准"]
+  }
+}
