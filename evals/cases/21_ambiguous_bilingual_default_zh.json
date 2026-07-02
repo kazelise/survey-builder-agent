@@ -1,0 +1,28 @@
+{
+  "name": "ambiguous_bilingual_default_zh",
+  "category": "ambiguous",
+  "lang": "zh",
+  "instruction": "做一个双语问卷，两组对照，风格随意，加一个帖子和一个问题，发布给我链接。",
+  "notes": "No explicit language pair stated for '双语' — per prompts.py heuristics this should default to zh-CN + en. Terminal assert only checks the superset, not exact wording, to tolerate the ambiguity.",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {
+      "title": "双语对照调研", "platform_style": "x", "platform_ui_style": "twitter",
+      "num_groups": 2, "default_language": "zh-CN", "supported_languages": ["zh-CN", "en"]
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://example.com/amb1", "order": 1}}]},
+    {"tool_use": [{"name": "add_survey_question", "input": {
+      "survey_id": "$survey_id", "question_type": "single_choice", "text": "你的看法？", "order": 1, "config": {"options": ["同意", "不同意"]}
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "已发布，链接：{share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "add_survey_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "supported_languages_superset": ["en", "zh-CN"],
+    "num_groups": 2,
+    "post_count_min": 1,
+    "question_count_min": 1
+  }
+}

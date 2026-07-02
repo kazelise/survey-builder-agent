@@ -1,0 +1,23 @@
+{
+  "name": "ambiguous_language_shorthand_en",
+  "category": "ambiguous",
+  "lang": "en",
+  "instruction": "Make a survey in Chinese (simplified) and English — just say 'zh' and 'en', one post, one question, publish.",
+  "notes": "Deliberately uses the loose alias 'zh' instead of the canonical 'zh-CN' to exercise create_survey's client-side language normalization.",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {"title": "Loose lang codes", "default_language": "zh", "supported_languages": ["zh", "en"]}}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://example.com/loose", "order": 1}}]},
+    {"tool_use": [{"name": "add_survey_question", "input": {
+      "survey_id": "$survey_id", "question_type": "text", "text": "Any thoughts?", "order": 1
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "Published. Link: {share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "add_survey_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "default_language": "zh-CN",
+    "supported_languages_superset": ["zh-CN", "en"]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "bilingual_ab_xhs_zh",
+  "category": "multi_step",
+  "lang": "zh",
+  "instruction": "帮我建一个小红书风格的问卷，中英双语，A/B 两组：一组显示点赞数一组不显示，加两个刺激帖子和一个 5 点李克特量表，发布并给我分享链接",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {
+      "title": "小红书点赞实验", "platform_style": "xiaohongshu", "platform_ui_style": "xiaohongshu",
+      "num_groups": 2, "group_names": {"1": "with_likes", "2": "no_likes"},
+      "default_language": "zh-CN", "supported_languages": ["zh-CN", "en"]
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://xiaohongshu.com/post/1", "order": 1}}]},
+    {"tool_use": [{"name": "update_post_display", "input": {
+      "survey_id": "$survey_id", "post_id": "$post_ids[-1]", "display_title": "帖子1",
+      "show_likes": true, "display_likes": 128, "group_overrides": {"2": {"show_likes": false}}
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://xiaohongshu.com/post/2", "order": 2}}]},
+    {"tool_use": [{"name": "update_post_display", "input": {
+      "survey_id": "$survey_id", "post_id": "$post_ids[-1]", "display_title": "帖子2",
+      "show_likes": true, "display_likes": 76, "group_overrides": {"2": {"show_likes": false}}
+    }}]},
+    {"tool_use": [{"name": "add_survey_question", "input": {
+      "survey_id": "$survey_id", "question_type": "likert", "text": "你有多信任这条内容？", "order": 1, "config": {"min": 1, "max": 5}
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id", "language": "zh-CN"}}]},
+    {"final": "已发布！分享链接：{share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "update_post_display", "add_post", "update_post_display", "add_survey_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "share_code": "*",
+    "supported_languages_superset": ["en", "zh-CN"],
+    "num_groups": 2,
+    "post_count": 2,
+    "has_question_type": "likert",
+    "final_text_contains_any": ["分享链接", "share"]
+  }
+}

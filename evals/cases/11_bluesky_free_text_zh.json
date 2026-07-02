@@ -1,0 +1,26 @@
+{
+  "name": "bluesky_free_text_zh",
+  "category": "multi_step",
+  "lang": "zh",
+  "instruction": "做一个 Bluesky 风格的中文问卷，加一个帖子，问题用开放式文本，然后发布。",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {
+      "title": "开放式反馈调研", "platform_style": "x", "platform_ui_style": "bluesky",
+      "default_language": "zh-CN", "supported_languages": ["zh-CN"]
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://bsky.app/post/1", "order": 1}}]},
+    {"tool_use": [{"name": "add_post_question", "input": {
+      "survey_id": "$survey_id", "post_id": "$post_ids[-1]", "question_type": "free_text",
+      "text": "请写下你的想法。", "order": 1
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "已发布，链接：{share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "add_post_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "has_question_type": "free_text",
+    "post_count": 1
+  }
+}

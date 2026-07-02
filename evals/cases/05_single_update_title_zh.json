@@ -1,0 +1,16 @@
+{
+  "name": "single_update_title_zh",
+  "category": "single_step",
+  "lang": "zh",
+  "instruction": "我要建一个草稿问卷叫'临时标题'，然后马上把标题改成'正式标题'，先别发布。",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {"title": "临时标题", "default_language": "zh-CN", "supported_languages": ["zh-CN"]}}]},
+    {"tool_use": [{"name": "update_survey", "input": {"survey_id": "$survey_id", "title": "正式标题"}}]},
+    {"final": "已创建并改名为'正式标题'，问卷仍是草稿状态，未发布。"}
+  ],
+  "expected_sequence": ["create_survey", "update_survey"],
+  "terminal_assert": {
+    "status": "draft",
+    "final_text_contains_any": ["草稿", "正式标题"]
+  }
+}

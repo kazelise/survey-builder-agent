@@ -1,0 +1,24 @@
+{
+  "name": "five_languages_en",
+  "category": "multi_step",
+  "lang": "en",
+  "instruction": "Create a survey supporting en, zh-CN, ja, ko, es (five languages), single group, one post with a likert question, publish.",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {
+      "title": "Five-language study", "default_language": "en", "supported_languages": ["en", "zh-CN", "ja", "ko", "es"]
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://example.com/multi", "order": 1}}]},
+    {"tool_use": [{"name": "add_survey_question", "input": {
+      "survey_id": "$survey_id", "question_type": "likert", "text": "How much do you trust this?", "order": 1, "config": {"min": 1, "max": 5}
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "Published, supporting 5 languages. Link: {share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "add_survey_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "supported_languages_exact": ["en", "zh-CN", "ja", "ko", "es"],
+    "has_question_type": "likert"
+  }
+}

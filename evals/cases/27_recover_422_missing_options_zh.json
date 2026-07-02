@@ -1,0 +1,26 @@
+{
+  "name": "recover_422_missing_options_zh",
+  "category": "error_recovery",
+  "lang": "zh",
+  "instruction": "帮我建一个问卷，一个帖子，加一个关于满意度的单选题，发布。",
+  "notes": "Script deliberately first calls add_post_question with an empty config (missing options) to trigger the client-side ToolError, then retries with valid options once it sees the error.",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {"title": "满意度调研", "default_language": "zh-CN", "supported_languages": ["zh-CN"]}}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://example.com/sat", "order": 1}}]},
+    {"tool_use": [{"name": "add_post_question", "input": {
+      "survey_id": "$survey_id", "post_id": "$post_ids[-1]", "question_type": "single_choice", "text": "你满意吗？", "order": 1, "config": {}
+    }}]},
+    {"if_last_error": {"tool_use": [{"name": "add_post_question", "input": {
+      "survey_id": "$survey_id", "post_id": "$post_ids[-1]", "question_type": "single_choice", "text": "你满意吗？", "order": 1, "config": {"options": ["满意", "不满意"]}
+    }}]}, "else": {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]}},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "已发布，链接：{share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "add_post_question", "add_post_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "has_question_type": "single_choice",
+    "expect_error_from": ["add_post_question"]
+  }
+}

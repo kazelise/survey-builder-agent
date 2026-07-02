@@ -1,0 +1,26 @@
+{
+  "name": "ambiguous_platform_unspecified_zh",
+  "category": "ambiguous",
+  "lang": "zh",
+  "instruction": "帮我随便建个问卷，主题不重要，双语，一个帖子，一个评分题，发布链接给我。",
+  "notes": "No platform mentioned at all — per heuristics should default to platform_style 'x' / platform_ui_style 'twitter'.",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {
+      "title": "随意主题调研", "platform_style": "x", "platform_ui_style": "twitter",
+      "default_language": "zh-CN", "supported_languages": ["zh-CN", "en"]
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://example.com/amb2", "order": 1}}]},
+    {"tool_use": [{"name": "add_survey_question", "input": {
+      "survey_id": "$survey_id", "question_type": "rating", "text": "打个分？", "order": 1, "config": {"min": 1, "max": 5}
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "已发布，链接：{share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "add_survey_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "supported_languages_superset": ["zh-CN", "en"],
+    "has_question_type": "rating"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "single_share_link_after_create_en",
+  "category": "single_step",
+  "lang": "en",
+  "instruction": "Just create a bare-bones English survey titled 'Test' and give me the share link — I'll add content later.",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {"title": "Test", "default_language": "en", "supported_languages": ["en"]}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "Here you go: {share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "get_share_link"],
+  "terminal_assert": {
+    "status": "draft",
+    "share_link_present": true,
+    "final_text_contains_any": ["survey", "/survey"]
+  }
+}

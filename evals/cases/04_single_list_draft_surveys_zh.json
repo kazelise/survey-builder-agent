@@ -1,0 +1,15 @@
+{
+  "name": "single_list_draft_surveys_zh",
+  "category": "single_step",
+  "lang": "zh",
+  "instruction": "帮我看看我有哪些还没发布的问卷草稿。",
+  "mock_script": [
+    {"tool_use": [{"name": "list_surveys", "input": {"status": "draft"}}]},
+    {"final": "你目前有 {total} 个草稿问卷。"}
+  ],
+  "expected_sequence": ["list_surveys"],
+  "terminal_assert": {
+    "no_mutating_calls": true,
+    "final_text_contains_any": ["草稿", "draft"]
+  }
+}

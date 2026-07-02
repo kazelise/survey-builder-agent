@@ -1,0 +1,26 @@
+{
+  "name": "douyin_rating_en",
+  "category": "multi_step",
+  "lang": "en",
+  "instruction": "Douyin-style, English only, one group, one post with fake engagement numbers, a 1-10 rating question, then publish and share.",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {
+      "title": "Douyin rating study", "platform_style": "xiaohongshu", "platform_ui_style": "douyin",
+      "default_language": "en", "supported_languages": ["en"]
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://douyin.com/video/1", "order": 1}}]},
+    {"tool_use": [{"name": "update_post_display", "input": {"survey_id": "$survey_id", "post_id": "$post_ids[-1]", "display_likes": 500, "show_likes": true}}]},
+    {"tool_use": [{"name": "add_survey_question", "input": {
+      "survey_id": "$survey_id", "question_type": "rating", "text": "Rate 1-10.", "order": 1, "config": {"min": 1, "max": 10}
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "Published. Link: {share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "update_post_display", "add_survey_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "has_question_type": "rating",
+    "post_count": 1
+  }
+}

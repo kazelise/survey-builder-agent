@@ -1,0 +1,21 @@
+{
+  "name": "recover_publish_before_posts_zh",
+  "category": "error_recovery",
+  "lang": "zh",
+  "instruction": "先尝试发布一个还没加帖子的问卷（应该会失败），然后补加一个帖子再发布成功。",
+  "notes": "Exercises the local ToolError guard in publish_survey ('no posts yet') and recovery from it.",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {"title": "先发布后补帖子", "default_language": "zh-CN", "supported_languages": ["zh-CN"]}}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"if_last_error": {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://example.com/late", "order": 1}}]}, "else": {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]}},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "补上帖子后已成功发布，链接：{share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "publish_survey", "add_post", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "post_count": 1,
+    "expect_error_from": ["publish_survey"]
+  }
+}

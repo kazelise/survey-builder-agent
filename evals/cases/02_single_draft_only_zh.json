@@ -1,0 +1,16 @@
+{
+  "name": "single_draft_only_zh",
+  "category": "single_step",
+  "lang": "zh",
+  "instruction": "帮我创建一个英文问卷草稿，标题叫「快速调研」，先不发布。",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {"title": "快速调研", "default_language": "en", "supported_languages": ["en"]}}]},
+    {"final": "草稿已创建，问卷 ID {survey_id}，状态为 draft，尚未发布。"}
+  ],
+  "expected_sequence": ["create_survey"],
+  "terminal_assert": {
+    "status": "draft",
+    "max_mutating_calls": 1,
+    "final_text_contains_any": ["draft", "草稿"]
+  }
+}

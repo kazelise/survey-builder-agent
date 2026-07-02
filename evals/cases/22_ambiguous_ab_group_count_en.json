@@ -1,0 +1,25 @@
+{
+  "name": "ambiguous_ab_group_count_en",
+  "category": "ambiguous",
+  "lang": "en",
+  "instruction": "Set up an A/B test survey in English about post engagement, one stimulus post, one likert question, then publish.",
+  "notes": "'A/B test' with no explicit group count should resolve to num_groups=2 per the heuristics.",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {
+      "title": "Engagement A/B test", "num_groups": 2, "group_names": {"1": "A", "2": "B"},
+      "default_language": "en", "supported_languages": ["en"]
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://example.com/ab", "order": 1}}]},
+    {"tool_use": [{"name": "add_survey_question", "input": {
+      "survey_id": "$survey_id", "question_type": "likert", "text": "How engaging is this?", "order": 1, "config": {"min": 1, "max": 5}
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "Published a 2-group A/B test. Link: {share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "add_survey_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "num_groups": 2
+  }
+}

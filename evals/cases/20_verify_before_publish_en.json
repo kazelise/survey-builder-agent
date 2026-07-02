@@ -1,0 +1,22 @@
+{
+  "name": "verify_before_publish_en",
+  "category": "multi_step",
+  "lang": "en",
+  "instruction": "Build an English single-group survey, one post, one rating question; before publishing, double check the survey via get_survey, then publish and give me the link.",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {"title": "Verify-before-publish", "default_language": "en", "supported_languages": ["en"]}}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://example.com/verify", "order": 1}}]},
+    {"tool_use": [{"name": "add_post_question", "input": {
+      "survey_id": "$survey_id", "post_id": "$post_ids[-1]", "question_type": "rating", "text": "Rate it.", "order": 1, "config": {"min": 0, "max": 4}
+    }}]},
+    {"tool_use": [{"name": "get_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "Verified and published. Link: {share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "add_post_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "has_question_type": "rating"
+  }
+}

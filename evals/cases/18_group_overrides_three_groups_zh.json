@@ -1,0 +1,30 @@
+{
+  "name": "group_overrides_three_groups_zh",
+  "category": "multi_step",
+  "lang": "zh",
+  "instruction": "小红书风格，A/B/C 三组，中文问卷，一个帖子，三组显示不同点赞数（用 group_overrides），一个评分题，发布。",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {
+      "title": "三组点赞对照", "platform_style": "xiaohongshu", "platform_ui_style": "xiaohongshu",
+      "num_groups": 3, "group_names": {"1": "g1", "2": "g2", "3": "g3"},
+      "default_language": "zh-CN", "supported_languages": ["zh-CN"]
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://xiaohongshu.com/post/3", "order": 1}}]},
+    {"tool_use": [{"name": "update_post_display", "input": {
+      "survey_id": "$survey_id", "post_id": "$post_ids[-1]",
+      "group_overrides": {"1": {"display_likes": 10}, "2": {"display_likes": 50}, "3": {"display_likes": 200}}
+    }}]},
+    {"tool_use": [{"name": "add_survey_question", "input": {
+      "survey_id": "$survey_id", "question_type": "rating", "text": "打个分？", "order": 1, "config": {"min": 1, "max": 5}
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "已发布，链接：{share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "update_post_display", "add_survey_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "num_groups": 3,
+    "has_question_type": "rating"
+  }
+}

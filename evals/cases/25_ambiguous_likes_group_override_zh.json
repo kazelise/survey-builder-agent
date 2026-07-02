@@ -1,0 +1,26 @@
+{
+  "name": "ambiguous_likes_group_override_zh",
+  "category": "ambiguous",
+  "lang": "zh",
+  "instruction": "小红书风格问卷，一组显示点赞另一组不显示，中文，一个帖子，发布。",
+  "notes": "'一组...另一组' implies exactly two groups without ever saying 'A/B' explicitly.",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {
+      "title": "点赞可见性对照", "platform_style": "xiaohongshu", "platform_ui_style": "xiaohongshu",
+      "num_groups": 2, "group_names": {"1": "with_likes", "2": "no_likes"},
+      "default_language": "zh-CN", "supported_languages": ["zh-CN"]
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://xiaohongshu.com/post/4", "order": 1}}]},
+    {"tool_use": [{"name": "update_post_display", "input": {
+      "survey_id": "$survey_id", "post_id": "$post_ids[-1]", "show_likes": true, "group_overrides": {"2": {"show_likes": false}}
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "已发布，链接：{share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "update_post_display", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "num_groups": 2
+  }
+}

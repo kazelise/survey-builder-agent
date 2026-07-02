@@ -1,0 +1,22 @@
+{
+  "name": "query_then_build_en",
+  "category": "multi_step",
+  "lang": "en",
+  "instruction": "Check what surveys I already have, then build me a fresh English single-group survey with one post and a likert question, and publish it.",
+  "mock_script": [
+    {"tool_use": [{"name": "list_surveys", "input": {}}]},
+    {"tool_use": [{"name": "create_survey", "input": {"title": "Fresh survey", "default_language": "en", "supported_languages": ["en"]}}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://example.com/fresh", "order": 1}}]},
+    {"tool_use": [{"name": "add_survey_question", "input": {
+      "survey_id": "$survey_id", "question_type": "likert", "text": "Rate your trust.", "order": 1, "config": {"min": 1, "max": 5}
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "Published a new survey. Share link: {share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "add_survey_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "has_question_type": "likert"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "truth_social_two_questions_zh",
+  "category": "multi_step",
+  "lang": "zh",
+  "instruction": "Truth Social 风格，繁体中文问卷，一个帖子，加两个问题：一个李克特和一个单选，然后发布。",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {
+      "title": "繁中雙題調研", "platform_style": "x", "platform_ui_style": "truth_social",
+      "default_language": "zh-TW", "supported_languages": ["zh-TW"]
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://truthsocial.com/post/1", "order": 1}}]},
+    {"tool_use": [{"name": "add_post_question", "input": {
+      "survey_id": "$survey_id", "post_id": "$post_ids[-1]", "question_type": "likert", "text": "你信任這則貼文嗎？", "order": 1, "config": {"min": 1, "max": 5}
+    }}]},
+    {"tool_use": [{"name": "add_post_question", "input": {
+      "survey_id": "$survey_id", "post_id": "$post_ids[-1]", "question_type": "single_choice", "text": "你同意嗎？", "order": 2, "config": {"options": ["同意", "不同意"]}
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "已發布，連結：{share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "add_post_question", "add_post_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "question_count_min": 2,
+    "has_question_type": ["likert", "single_choice"]
+  }
+}

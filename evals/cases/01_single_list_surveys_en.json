@@ -1,0 +1,16 @@
+{
+  "name": "single_list_surveys_en",
+  "category": "single_step",
+  "lang": "en",
+  "instruction": "Show me the surveys I have created so far — don't build anything new right now.",
+  "mock_script": [
+    {"tool_use": [{"name": "list_surveys", "input": {}}]},
+    {"final": "You currently have {total} survey(s) on file. No changes were made."}
+  ],
+  "expected_sequence": ["list_surveys"],
+  "terminal_assert": {
+    "reason": "done",
+    "no_mutating_calls": true,
+    "final_text_contains_any": ["survey"]
+  }
+}

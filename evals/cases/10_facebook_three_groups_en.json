@@ -1,0 +1,32 @@
+{
+  "name": "facebook_three_groups_en",
+  "category": "multi_step",
+  "lang": "en",
+  "instruction": "Build a Facebook-style survey with 3 groups labeled control/variant_a/variant_b, English + Spanish, two posts each with a fabricated comment, plus a multiple_choice question, then publish.",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {
+      "title": "Facebook 3-arm study", "platform_style": "facebook", "platform_ui_style": "facebook",
+      "num_groups": 3, "group_names": {"1": "control", "2": "variant_a", "3": "variant_b"},
+      "default_language": "en", "supported_languages": ["en", "es"]
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://facebook.com/p/1", "order": 1}}]},
+    {"tool_use": [{"name": "add_comment", "input": {"survey_id": "$survey_id", "post_id": "$post_ids[-1]", "author_name": "Alex", "text": "Interesting!"}}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://facebook.com/p/2", "order": 2}}]},
+    {"tool_use": [{"name": "add_comment", "input": {"survey_id": "$survey_id", "post_id": "$post_ids[-1]", "author_name": "Sam", "text": "Not sure I agree."}}]},
+    {"tool_use": [{"name": "add_survey_question", "input": {
+      "survey_id": "$survey_id", "question_type": "multiple_choice", "text": "Which factors influenced you?",
+      "order": 1, "config": {"options": ["credibility", "engagement", "source", "none"]}
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "Published a 3-group study. Share link: {share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "add_comment", "add_post", "add_comment", "add_survey_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "num_groups": 3,
+    "post_count": 2,
+    "has_question_type": "multiple_choice",
+    "supported_languages_superset": ["en", "es"]
+  }
+}

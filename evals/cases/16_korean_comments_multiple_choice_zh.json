@@ -1,0 +1,28 @@
+{
+  "name": "korean_comments_multiple_choice_zh",
+  "category": "multi_step",
+  "lang": "zh",
+  "instruction": "建一个韩语问卷，Instagram 风格，一个帖子，加两条虚构评论，一个多选题，发布。",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {
+      "title": "한국어 설문", "platform_style": "instagram", "platform_ui_style": "instagram",
+      "default_language": "ko", "supported_languages": ["ko"]
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://instagram.com/p/3", "order": 1}}]},
+    {"tool_use": [{"name": "add_comment", "input": {"survey_id": "$survey_id", "post_id": "$post_ids[-1]", "author_name": "민지", "text": "좋아요!"}}]},
+    {"tool_use": [{"name": "add_comment", "input": {"survey_id": "$survey_id", "post_id": "$post_ids[-1]", "author_name": "지훈", "text": "동의해요."}}]},
+    {"tool_use": [{"name": "add_survey_question", "input": {
+      "survey_id": "$survey_id", "question_type": "multiple_choice", "text": "어떤 요소가 영향을 미쳤나요?", "order": 1, "config": {"options": ["신뢰도", "관심도", "출처"]}
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "已发布，链接：{share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "add_comment", "add_comment", "add_survey_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "has_question_type": "multiple_choice",
+    "post_count": 1,
+    "default_language": "ko"
+  }
+}

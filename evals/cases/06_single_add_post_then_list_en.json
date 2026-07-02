@@ -1,0 +1,18 @@
+{
+  "name": "single_add_post_then_list_en",
+  "category": "single_step",
+  "lang": "en",
+  "instruction": "Create a minimal English draft survey, add one stimulus post from https://example.com/a, then show me the post list — no need to publish.",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {"title": "Minimal", "default_language": "en", "supported_languages": ["en"]}}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://example.com/a", "order": 1}}]},
+    {"tool_use": [{"name": "list_posts", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "Added 1 post. The survey remains a draft (not published)."}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "list_posts"],
+  "terminal_assert": {
+    "status": "draft",
+    "post_count": 1,
+    "final_text_contains_any": ["draft", "post"]
+  }
+}

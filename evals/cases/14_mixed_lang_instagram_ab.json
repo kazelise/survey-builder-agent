@@ -1,0 +1,27 @@
+{
+  "name": "mixed_lang_instagram_ab",
+  "category": "multi_step",
+  "lang": "mixed",
+  "instruction": "帮我做个 instagram style 的 survey，两组 A/B test，default language 用英文，再加一个 zh-CN，一个 post 一个 text 问题，然后 publish 给我 share link",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {
+      "title": "Instagram AB test", "platform_style": "instagram", "platform_ui_style": "instagram",
+      "num_groups": 2, "group_names": {"1": "A", "2": "B"},
+      "default_language": "en", "supported_languages": ["en", "zh-CN"]
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://instagram.com/p/2", "order": 1}}]},
+    {"tool_use": [{"name": "add_post_question", "input": {
+      "survey_id": "$survey_id", "post_id": "$post_ids[-1]", "question_type": "text", "text": "Any comments?", "order": 1
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "Published. Share link: {share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "add_post_question", "publish_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "num_groups": 2,
+    "has_question_type": "text",
+    "supported_languages_superset": ["en", "zh-CN"]
+  }
+}

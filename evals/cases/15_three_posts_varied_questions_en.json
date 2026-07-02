@@ -1,0 +1,36 @@
+{
+  "name": "three_posts_varied_questions_en",
+  "category": "multi_step",
+  "lang": "en",
+  "instruction": "Build an X-style survey, English only, three posts each with a different question type (single_choice, likert, rating), then publish.",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {
+      "title": "Three-post mixed-question study", "platform_style": "x", "platform_ui_style": "twitter",
+      "default_language": "en", "supported_languages": ["en"]
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://x.com/1", "order": 1}}]},
+    {"tool_use": [{"name": "add_post_question", "input": {
+      "survey_id": "$survey_id", "post_id": "$post_ids[-1]", "question_type": "single_choice", "text": "Q1?", "order": 1, "config": {"options": ["Yes", "No"]}
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://x.com/2", "order": 2}}]},
+    {"tool_use": [{"name": "add_post_question", "input": {
+      "survey_id": "$survey_id", "post_id": "$post_ids[-1]", "question_type": "likert", "text": "Q2?", "order": 1, "config": {"min": 1, "max": 5}
+    }}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://x.com/3", "order": 3}}]},
+    {"tool_use": [{"name": "add_post_question", "input": {
+      "survey_id": "$survey_id", "post_id": "$post_ids[-1]", "question_type": "rating", "text": "Q3?", "order": 1, "config": {"min": 0, "max": 4}
+    }}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "Published all three posts. Share link: {share_link}"}
+  ],
+  "expected_sequence": [
+    "create_survey", "add_post", "add_post_question", "add_post", "add_post_question", "add_post", "add_post_question", "publish_survey"
+  ],
+  "terminal_assert": {
+    "status": "published",
+    "post_count": 3,
+    "question_count_min": 3,
+    "has_question_type": ["single_choice", "likert", "rating"]
+  }
+}

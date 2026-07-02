@@ -1,0 +1,22 @@
+{
+  "name": "recover_locked_field_after_publish_en",
+  "category": "error_recovery",
+  "lang": "en",
+  "instruction": "Publish a minimal survey, then try to change its language to Japanese afterward, acknowledge that it's blocked, and just report the existing share link instead.",
+  "notes": "Exercises update_survey's local pre-check for structural fields once status=='published' (DESIGN.md §3 'Publish-locked fields').",
+  "mock_script": [
+    {"tool_use": [{"name": "create_survey", "input": {"title": "Locked-field test", "default_language": "en", "supported_languages": ["en"]}}]},
+    {"tool_use": [{"name": "add_post", "input": {"survey_id": "$survey_id", "original_url": "https://example.com/lock", "order": 1}}]},
+    {"tool_use": [{"name": "publish_survey", "input": {"survey_id": "$survey_id"}}]},
+    {"tool_use": [{"name": "update_survey", "input": {"survey_id": "$survey_id", "default_language": "ja"}}]},
+    {"tool_use": [{"name": "get_share_link", "input": {"survey_id": "$survey_id"}}]},
+    {"final": "Sorry, I can't change the language after publish — it's locked. Here's the existing link: {share_link}"}
+  ],
+  "expected_sequence": ["create_survey", "add_post", "publish_survey", "update_survey"],
+  "terminal_assert": {
+    "status": "published",
+    "default_language": "en",
+    "expect_error_from": ["update_survey"],
+    "final_text_contains_any": ["can't", "locked", "unable"]
+  }
+}
