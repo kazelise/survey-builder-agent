@@ -139,6 +139,10 @@ class MockModel:
     Each script entry is one of:
       - {"tool_use": [{"name": ..., "input": {...}}, ...]}
       - {"final": "text"}
+      - {"refusal": "text"} -- synthesizes stop_reason="refusal", the one
+        terminal stop_reason only a live model would normally produce
+        (loop.py's refusal branch); lets that branch be exercised under
+        mock too instead of being untestable without a real API call.
       - a callable `(last_tool_results) -> entry` for conditional branches
         (DESIGN.md §8): it receives the tool_result blocks from the most
         recent user message, so a script can react to e.g. `add_post`
@@ -170,6 +174,12 @@ class MockModel:
             text = entry["final"]
             return ModelResponse(
                 text=text, tool_uses=[], stop_reason="end_turn", raw_content=[{"type": "text", "text": text}]
+            )
+
+        if "refusal" in entry:
+            text = entry["refusal"]
+            return ModelResponse(
+                text=text, tool_uses=[], stop_reason="refusal", raw_content=[{"type": "text", "text": text}]
             )
 
         raw_content: list[dict] = []

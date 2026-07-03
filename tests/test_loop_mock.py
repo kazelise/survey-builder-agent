@@ -143,6 +143,27 @@ def test_end_turn_and_stop_sequence_are_still_treated_as_a_clean_done_answer():
         assert result.final_text == "Done. Share link: /survey/x?lang=en"
 
 
+def test_refusal_stop_reason_terminates_the_run_with_no_final_text():
+    # Regression: loop.py's stop_reason=="refusal" branch was previously
+    # exercised by neither the mock suite nor the eval suite -- MockModel
+    # had no way to synthesize it (only "tool_use"/"end_turn"), and the
+    # eval suite's "refuse_*" cases have the model refuse via ordinary text
+    # (stop_reason="end_turn"), which goes through the "done" branch
+    # instead. Now that MockModel can produce a {"refusal": ...} entry,
+    # pin the branch's actual behavior: no final_text (by design, even
+    # though the API response carries refusal text), reason="refusal".
+    script = [{"refusal": "I can't help with that."}]
+    model, executor, ctx, settings, tracer = _build(script)
+    result = run(
+        "do something out of scope", "system", model, anthropic_tools(TOOLS), executor, ctx, settings, tracer
+    )
+
+    assert result.reason == "refusal"
+    assert result.final_text is None
+    assert result.turns == 1
+    assert result.state["status"] is None  # no survey was ever built
+
+
 def test_trim_context_keeps_first_message_and_recent_rounds():
     head = {"role": "user", "content": "original instruction"}
     # Build 10 fake (assistant, user) round pairs, each with a long content
