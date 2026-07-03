@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from typing import Callable
 
 from .context import HandlerContext
 from .http_client import CS14ApiError
@@ -59,17 +60,39 @@ class ToolExecutor:
             return text
 
         # Oversized results get summarized rather than hard-cut mid-JSON, so
-        # the model still sees a valid, useful shape (DESIGN.md §10).
+        # the model still sees a valid, useful shape (DESIGN.md §10). The
+        # summary is re-validated against the budget (not just sliced) —
+        # see _fit_summary.
         if isinstance(payload, list):
-            summary = {"count": len(payload), "first_n": payload[:10], "truncated": True}
-            return json.dumps(summary, default=str, ensure_ascii=False)[: self._max_chars]
+            return self._fit_summary(lambda n: {"count": len(payload), "first_n": payload[:n], "truncated": True})
         if isinstance(payload, dict) and isinstance(payload.get("posts"), list):
-            summary = {**payload, "posts": payload["posts"][:10], "truncated": True}
-            return json.dumps(summary, default=str, ensure_ascii=False)[: self._max_chars]
+            posts = payload["posts"]
+            return self._fit_summary(lambda n: {**payload, "posts": posts[:n], "truncated": True})
         if isinstance(payload, dict) and isinstance(payload.get("items"), list):
-            summary = {**payload, "items": payload["items"][:10], "truncated": True}
-            return json.dumps(summary, default=str, ensure_ascii=False)[: self._max_chars]
+            items = payload["items"]
+            return self._fit_summary(lambda n: {**payload, "items": items[:n], "truncated": True})
         return text[: self._max_chars] + "...[truncated]"
+
+    def _fit_summary(self, build: Callable[[int], dict]) -> str:
+        """Build a `{..., truncated: True}` summary via `build(n)` for a
+        shrinking item count until the *serialized* result actually fits
+        `self._max_chars`, so the caller never receives a char-sliced,
+        invalid-JSON fragment — the bug this replaces: dumping a fixed
+        first-10-items summary then blindly `[:max_chars]`-slicing it,
+        which produces truncated mid-string JSON whenever the first 10
+        items are themselves large (see tests/test_executor.py)."""
+        for n in (10, 5, 2, 1, 0):
+            candidate = json.dumps(build(n), default=str, ensure_ascii=False)
+            if len(candidate) <= self._max_chars:
+                return candidate
+        # Even an empty-item summary didn't fit — huge unrelated envelope
+        # fields, or a pathologically small max_chars. Fall back to
+        # ever-smaller fixed shapes rather than ever emitting invalid JSON.
+        for fallback_obj in ({"truncated": True, "note": "result too large to summarize"}, {"truncated": True}, {}):
+            fallback = json.dumps(fallback_obj, ensure_ascii=False)
+            if len(fallback) <= self._max_chars:
+                return fallback
+        return ""  # max_chars smaller than "{}" — nothing valid can fit
 
 
 def _validate_args(schema: dict, args: dict) -> str | None:

@@ -98,3 +98,48 @@ def test_oversized_list_result_is_summarized_not_hard_truncated_mid_json():
     assert parsed["truncated"] is True
     assert parsed["count"] == 2000
     assert len(parsed["first_n"]) == 10
+
+
+def test_oversized_items_with_large_elements_still_produces_valid_json():
+    # Regression test: when the first-10-items summary itself still exceeds
+    # result_max_chars (items are large objects, not small ints), the old
+    # code did `json.dumps(summary)[:max_chars]`, slicing mid-string and
+    # returning invalid JSON as a "successful" (is_error=False) tool_result.
+    # The fix must shrink the item count until the summary actually fits.
+    def handler(ctx, args):
+        return {"items": [{"id": i, "blob": "x" * 500} for i in range(20)]}
+
+    executor = ToolExecutor([_spec("echo", handler)], _ctx(), result_max_chars=4000)
+    result = executor.run("tu_1", "echo", {"x": 1})
+    assert result.is_error is False
+    assert len(result.content) <= 4000
+    parsed = json.loads(result.content)  # must not raise json.JSONDecodeError
+    assert parsed["truncated"] is True
+    assert 0 <= len(parsed["items"]) < 20
+
+
+def test_oversized_posts_with_large_elements_still_produces_valid_json():
+    # Same bug, "posts" envelope branch (list_posts-shaped results).
+    def handler(ctx, args):
+        return {"count": 20, "posts": [{"id": i, "blob": "x" * 500} for i in range(20)]}
+
+    executor = ToolExecutor([_spec("echo", handler)], _ctx(), result_max_chars=4000)
+    result = executor.run("tu_1", "echo", {"x": 1})
+    assert result.is_error is False
+    assert len(result.content) <= 4000
+    parsed = json.loads(result.content)  # must not raise json.JSONDecodeError
+    assert parsed["truncated"] is True
+    assert 0 <= len(parsed["posts"]) < 20
+
+
+def test_pathologically_tiny_budget_still_yields_valid_json_or_empty_string():
+    # Even when even an empty-summary shape can't fit, _truncate must never
+    # return a char-sliced, invalid-JSON fragment.
+    def handler(ctx, args):
+        return {"items": [{"id": i, "blob": "x" * 500} for i in range(20)]}
+
+    executor = ToolExecutor([_spec("echo", handler)], _ctx(), result_max_chars=5)
+    result = executor.run("tu_1", "echo", {"x": 1})
+    assert result.is_error is False
+    if result.content:
+        json.loads(result.content)  # must not raise if non-empty
