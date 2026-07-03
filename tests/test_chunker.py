@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from survey_agent.rag.chunker import DEFAULT_MAX_CHARS, chunk_markdown_text
+from survey_agent.rag.chunker import DEFAULT_MAX_CHARS, chunk_markdown_text, strip_frontmatter
 
 
 def test_pack_never_exceeds_max_chars_even_with_near_max_size_paragraphs():
@@ -42,3 +42,40 @@ def test_pack_still_carries_overlap_when_it_fits():
     for c in chunks:
         assert len(c.text) <= 200
     assert chunks[0].text[-10:] in chunks[1].text
+
+
+def test_strip_frontmatter_removes_a_real_yaml_frontmatter_block():
+    text = "---\nlayout: home\nhero:\n  name: cs14\n---\n\n# Welcome\n\nBody text.\n"
+    stripped = strip_frontmatter(text)
+    assert stripped == "\n# Welcome\n\nBody text.\n"
+
+
+def test_strip_frontmatter_does_not_eat_content_after_a_leading_horizontal_rule():
+    # Regression: a doc that opens with a Markdown horizontal-rule divider
+    # ('---' as the literal first line -- a common section-break
+    # convention) followed *later* by a second bare '---' divider used to
+    # have its ENTIRE first section (heading included) silently deleted,
+    # because the old check only looked for the next literal '---' line
+    # with no bound and no awareness that a heading had already started.
+    text = (
+        "---\n"
+        "# Real Heading\n\n"
+        "Some real content here that must not be deleted.\n\n"
+        "More content.\n\n"
+        "---\n\n"
+        "Section after the second divider.\n"
+    )
+    stripped = strip_frontmatter(text)
+    assert "Real Heading" in stripped
+    assert "must not be deleted" in stripped
+    assert stripped == text  # not frontmatter at all -- left completely as-is
+
+
+def test_strip_frontmatter_leaves_unterminated_frontmatter_alone():
+    text = "---\nno closing delimiter anywhere in this short file\n"
+    assert strip_frontmatter(text) == text
+
+
+def test_strip_frontmatter_ignores_content_with_no_leading_delimiter():
+    text = "# Just a normal doc\n\nNo frontmatter here.\n"
+    assert strip_frontmatter(text) == text

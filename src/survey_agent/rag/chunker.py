@@ -25,6 +25,11 @@ FRONTMATTER_DELIM = "---"
 
 DEFAULT_MAX_CHARS = 900
 DEFAULT_OVERLAP_CHARS = 150
+# Generous bound for a real YAML frontmatter block (VitePress hero configs
+# are a handful of lines) -- used by strip_frontmatter to avoid scanning
+# arbitrarily far into a document that merely *opens* with a horizontal
+# rule.
+FRONTMATTER_MAX_LINES = 40
 
 
 @dataclass(frozen=True)
@@ -40,14 +45,27 @@ def strip_frontmatter(text: str) -> str:
     """Drop a leading YAML frontmatter block (```--- ... ---```), used by
     the VitePress docs-site pages (e.g. docs-site/docs/index.md's `layout:
     home` hero block) -- it's site config, not handbook content worth
-    indexing."""
+    indexing.
+
+    A document that merely *opens* with a Markdown horizontal-rule divider
+    ('---' as the literal first line -- a common section-break convention)
+    is not frontmatter, even though it also starts with '---'. Guard
+    against mistaking one for the other -- and silently deleting the
+    entire first section up to some later, unrelated '---' divider -- by
+    only treating the block as frontmatter when a closing '---' appears
+    within FRONTMATTER_MAX_LINES AND before any heading: real frontmatter
+    is a short, flat key/value block that never contains a heading."""
     if not text.startswith(FRONTMATTER_DELIM):
         return text
     lines = text.splitlines(keepends=True)
-    for i in range(1, len(lines)):
-        if lines[i].rstrip("\n") == FRONTMATTER_DELIM:
+    limit = min(len(lines), FRONTMATTER_MAX_LINES)
+    for i in range(1, limit):
+        stripped = lines[i].rstrip("\n")
+        if HEADING_RE.match(stripped):
+            break  # hit a heading before any closing delimiter -- not frontmatter
+        if stripped == FRONTMATTER_DELIM:
             return "".join(lines[i + 1 :])
-    return text  # unterminated frontmatter -- leave as-is rather than eat the whole file
+    return text  # no bounded, heading-free closing delimiter found -- leave as-is
 
 
 @dataclass
