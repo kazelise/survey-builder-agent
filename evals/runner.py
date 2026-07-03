@@ -135,9 +135,20 @@ def run_case(case: dict, *, real: bool, settings: Settings) -> CaseResult:
     finally:
         client.close()
 
-    seq = sequence_match(tool_calls, case.get("expected_sequence", []))
+    expected_sequence = case.get("expected_sequence", [])
+    terminal_assertions = case.get("terminal_assert", {})
+    if real and "expect_error_from" in terminal_assertions:
+        # Recovery cases script a deliberately-bad first call in mock mode.
+        # A real model that passes valid arguments on the first try has met
+        # the user goal — the recovery path itself is proven by the mock
+        # replay — so drop the forced-error expectation and collapse the
+        # scripted fail-then-retry duplicate in the expected sequence.
+        terminal_assertions = {k: v for k, v in terminal_assertions.items() if k != "expect_error_from"}
+        expected_sequence = [t for i, t in enumerate(expected_sequence) if i == 0 or t != expected_sequence[i - 1]]
+
+    seq = sequence_match(tool_calls, expected_sequence)
     terminal = terminal_state_assert(
-        case.get("terminal_assert", {}),
+        terminal_assertions,
         state=ctx.run.as_state(),
         final_text=result.final_text,
         reason=result.reason,

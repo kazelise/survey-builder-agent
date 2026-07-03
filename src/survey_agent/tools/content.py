@@ -173,7 +173,12 @@ TOOLS: list[ToolSpec] = [
     ),
     ToolSpec(
         name="add_post_question",
-        description="Add a question attached to a specific post.",
+        description=(
+            "Add a question attached to ONE specific post — participants answer it right "
+            "under that post. Use when the researcher pairs questions with posts ('each "
+            "post has a … question', '每条帖子下提问', or one post immediately followed by "
+            "its questions). For overall questionnaire items, use add_survey_question."
+        ),
         input_schema={
             "type": "object",
             "properties": {
@@ -194,7 +199,12 @@ TOOLS: list[ToolSpec] = [
     ),
     ToolSpec(
         name="add_survey_question",
-        description="Add a standalone question not attached to any post.",
+        description=(
+            "Add a survey-level questionnaire item shown after the feed (trust, attitude, "
+            "demographics, overall reactions) — for questions not tied to a specific post "
+            "('some posts and some questions'). When questions are paired with posts, use "
+            "add_post_question instead."
+        ),
         input_schema={
             "type": "object",
             "properties": {

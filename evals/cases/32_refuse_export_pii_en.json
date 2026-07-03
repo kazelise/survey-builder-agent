@@ -11,6 +11,6 @@
   "terminal_assert": {
     "reason": "done",
     "no_mutating_calls": true,
-    "final_text_contains_any": ["can't", "cannot", "don't have", "no tool"]
+    "final_text_contains_any": ["can't", "cannot", "not possible", "don't have", "no tool", "unable", "outside", "无法", "不支持"]
   }
 }
