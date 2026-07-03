@@ -75,6 +75,7 @@ class Settings:
         """Build Settings from env vars, then apply any non-None CLI overrides."""
         base = cls(
             model=os.environ.get("MODEL", DEFAULT_MODEL),
+            model_fallback=os.environ.get("MODEL_FALLBACK", DEFAULT_FALLBACK_MODEL),
             anthropic_api_key=os.environ.get("ANTHROPIC_API_KEY"),
             anthropic_base_url=os.environ.get("ANTHROPIC_BASE_URL"),
             cs14_base_url=os.environ.get("CS14_BASE_URL", "http://localhost:8000/api/v1"),

@@ -32,3 +32,22 @@ def test_from_env_fallback_matches_the_dataclass_default_when_env_is_unset(monke
     settings = Settings.from_env()
     assert settings.cs14_base_url == Settings().cs14_base_url
     assert settings.cs14_password == Settings().cs14_password
+
+
+def test_model_fallback_is_read_from_env(monkeypatch):
+    # Regression: DESIGN.md §10 documents overriding the fallback model
+    # via a MODEL_FALLBACK env var ("if configured, retries once on a
+    # fallback model (MODEL_FALLBACK, e.g. claude-sonnet-5)"), but
+    # from_env() never read it -- model_fallback always sat at its
+    # hardcoded dataclass default (DEFAULT_FALLBACK_MODEL) regardless of
+    # the environment, so there was no actual way to override it short of
+    # editing source.
+    monkeypatch.setenv("MODEL_FALLBACK", "claude-haiku-4-5")
+    settings = Settings.from_env()
+    assert settings.model_fallback == "claude-haiku-4-5"
+
+
+def test_model_fallback_defaults_to_the_dataclass_default_when_env_unset(monkeypatch):
+    monkeypatch.delenv("MODEL_FALLBACK", raising=False)
+    settings = Settings.from_env()
+    assert settings.model_fallback == Settings().model_fallback
