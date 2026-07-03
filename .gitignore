@@ -1,2 +1,16 @@
+# Secrets -- never commit a real .env; .env.example is the only tracked template.
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Project-specific
 traces/*.jsonl
 data/handbook_embeddings.json
