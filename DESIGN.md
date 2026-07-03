@@ -191,10 +191,23 @@ Key invariants (each a defensible design choice under interview):
 - `--max-turns` default 20 (build chain is ~8–12 tool calls; headroom for one recovery loop).
 - A soft guardrail: if `publish_survey` succeeds, the loop hints the model (system reminder appended as a `role:"system"` message on Opus 4.8) that the task is complete and it should return the share link — prevents over-running.
 
-### 6.3 System prompt (short — the whole thing, ~200 words)
-> You are a survey-building assistant for the cs14 platform. Turn the researcher's request into a published survey by calling tools. Rules: (1) Decide the language set and A/B group count/names FIRST and pass them to `create_survey` — they cannot be changed after publish. Default languages inferred from the request; valid codes: en, zh-CN, zh-TW, ja, ko, es. (2) To add a stimulus post, call `add_post` with a URL; if you are inventing the content or the fetch returns nothing, follow with `update_post_display` to set the shown title/image/text and any fake like/comment counts and per-group visibility. (3) Add question blocks with `add_post_question` (attached to a post) or `add_survey_question` (standalone). single/multiple_choice need non-empty options; likert/rating need 0<=min<max. (4) `publish_survey` LAST, only after at least one post exists. (5) When done, reply with the share link `/survey/<share_code>?lang=<default>` and a one-line summary. If a tool returns an error, read it and adjust — do not retry blindly.
+### 6.3 System prompt (short, frozen prefix)
 
-Language/AB heuristics (bilingual detection, "点赞/likes" → group_overrides) live in `prompts.py` as an appendable block, kept out of the frozen prefix for cache stability.
+This section intentionally does **not** quote the prompt text verbatim —
+it did once, and that copy silently went stale as `prompts.py` evolved
+(the R3 iteration rewrote rule 3 and added rules 4-6; see
+`evals/ITERATION.md`), so treat `prompts.py::SYSTEM_PROMPT` as the single
+source of truth and this as a summary of intent, current as of this
+writing (6 rules):
+
+1. Decide the language set + A/B group count/names FIRST, pass them to `create_survey` — locked after publish. Valid codes: en, zh-CN, zh-TW, ja, ko, es.
+2. `add_post` with a URL; follow with `update_post_display` for invented content or when the OG fetch comes back empty.
+3. Question placement follows the researcher's *phrasing*, not a fixed post-vs-survey default (a symmetric rule, rewritten in R3): `add_post_question` when questions are paired with posts ("each post has a … question", "每条帖子下…"), `add_survey_question` for overall/loose items not tied to a specific post. single/multiple_choice need non-empty options; likert/rating need `0<=min<max`.
+4. `publish_survey` LAST, after at least one post exists, and *only if the researcher actually asked to publish/发布/go live* — drafts already have share links, so "give me the link" alone does not mean publish.
+5. Reply with the share link + a one-line summary; read tool errors and adjust, don't retry blindly.
+6. For how-to/policy/terminology questions about the platform itself, call `search_handbook` first and ground the reply in its results instead of guessing; refuse out-of-scope/unethical requests (fabricating participants/data, PII access, bypassing locks) outright — no tools, no handbook detour.
+
+Language/AB heuristics (bilingual detection, "点赞/likes" → `group_overrides`) live in `prompts.py::LANGUAGE_AB_HEURISTICS`, a separate string appended after the frozen prefix so tuning them doesn't invalidate a cached prefix.
 
 ---
 
