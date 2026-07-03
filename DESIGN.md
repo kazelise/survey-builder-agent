@@ -13,7 +13,7 @@ A researcher types one natural-language sentence (中/英) — e.g. *"帮我建�
 Design pillars, each defended in its own section:
 
 1. **No framework.** Anthropic Python SDK directly (`base_url` + `model` overridable for future compatible endpoints), `httpx` for the tool layer. §4, §5.
-2. **Minimalist (badlogic/pi philosophy):** 13 tools (12 platform API + 1 local RAG handbook search), short system prompt, one explicit readable loop. §6, §7.
+2. **Minimalist (badlogic/pi philosophy):** 13 tools (11 platform API over HTTP + 2 local: `get_share_link` and the RAG handbook search), short system prompt, one explicit readable loop. §6, §7.
 3. **`--mock` mode is first-class:** a `MockModel` replays scripted `tool_use` decisions; the tool layer still fires real HTTP. Enables offline/CI/regression without an API key (env has no `ANTHROPIC_API_KEY`). §8.
 4. **Full-run trace:** JSONL per run — per-round model-input digest, tool call + result digest, token usage, latency, estimated cost. §9.
 5. **Robust failure handling:** HTTP retry w/ exponential backoff, tool-result truncation, context-window trimming, model-side degradation path. §10.

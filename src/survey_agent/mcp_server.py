@@ -1,4 +1,4 @@
-"""MCP server exposing the exact same 12 survey-builder tools as the SDK
+"""MCP server exposing the exact same 13 survey-builder tools as the SDK
 loop, over stdio, so any MCP host (Claude Desktop, Claude Code, etc.) can
 drive cs14 surveys directly.
 

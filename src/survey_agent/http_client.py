@@ -194,7 +194,9 @@ class CS14Client:
         self._client.close()
 
     # ── dry-run stub backend ─────────────────────────────────────────
-    # Deliberately not exhaustive: it covers the happy path of the 12 tools
+    # Deliberately not exhaustive: it covers the happy path of the 11
+    # HTTP-backed tools (of TOOLS' 13 total — get_share_link and
+    # search_handbook are local, no HTTP, so they never reach this stub)
     # well enough to demo/CI the CLI with zero network and zero backend, but
     # it does not replicate every validation rule the real FastAPI app has
     # (that's what test_http_client.py's MockTransport tests are for).
