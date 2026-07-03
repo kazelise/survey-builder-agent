@@ -36,7 +36,20 @@ class RunResult:
     final_text: str | None
     state: dict
     turns: int
-    reason: str  # "done" | "max_turns" | "model_unavailable" | "refusal"
+    # "done" | "max_turns" | "model_unavailable" | "refusal" | the raw
+    # Anthropic `stop_reason` for anything else non-terminal-looking (e.g.
+    # "max_tokens", "pause_turn") — see _DONE_STOP_REASONS below.
+    reason: str
+
+
+# stop_reason values that mean the model chose to stop with a complete,
+# trustworthy final answer. Anything else that isn't "tool_use"/"refusal"
+# (most notably "max_tokens" — the response was cut off mid-generation,
+# e.g. while emitting a large tool_use/JSON payload) must NOT be folded
+# into "done": resp.text may be empty or truncated, and callers (cli.py's
+# exit code, evals) need to be able to tell a genuine completion apart
+# from an incomplete one.
+_DONE_STOP_REASONS = frozenset({"end_turn", "stop_sequence"})
 
 
 def run(
@@ -91,8 +104,9 @@ def run(
             return RunResult(None, ctx.run.as_state(), turn + 1, "refusal")
 
         if resp.stop_reason != "tool_use":
-            tracer.run_summary(reason="done", turns=turn + 1, final_text=resp.text, **ctx.run.as_state())
-            return RunResult(resp.text, ctx.run.as_state(), turn + 1, "done")
+            reason = "done" if resp.stop_reason in _DONE_STOP_REASONS else resp.stop_reason
+            tracer.run_summary(reason=reason, turns=turn + 1, final_text=resp.text, **ctx.run.as_state())
+            return RunResult(resp.text, ctx.run.as_state(), turn + 1, reason)
 
         # ALL tool_result blocks go in ONE user message — splitting them
         # across messages trains the model to stop parallelizing tool calls.

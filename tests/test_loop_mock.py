@@ -9,7 +9,7 @@ from survey_agent.context import HandlerContext, RunContext
 from survey_agent.executor import ToolExecutor
 from survey_agent.http_client import CS14Client
 from survey_agent.loop import run, trim_context
-from survey_agent.model import MockModel
+from survey_agent.model import MockModel, ModelResponse, Usage
 from survey_agent.tools import TOOLS
 from survey_agent.tools.schema import anthropic_tools
 from survey_agent.trace import Tracer
@@ -76,6 +76,71 @@ def test_failed_tool_call_still_produces_a_tool_result_block():
     assert result.reason == "done"
     assert result.state["status"] == "draft"  # publish never actually succeeded
     assert result.final_text == "gave up after error"
+
+
+class _FixedStopReasonModel:
+    """Minimal Model double that always returns one fixed ModelResponse.
+
+    MockModel's script format (model.py) can only ever produce
+    stop_reason "tool_use" or "end_turn" — it has no way to synthesize
+    "max_tokens"/"stop_sequence"/other real-API stop reasons, so loop.py's
+    handling of those branches would otherwise be entirely untested (see
+    the "any non-tool_use, non-refusal stop_reason is silently treated as
+    done" finding). This stub fills that gap without needing a real
+    Anthropic call.
+    """
+
+    def __init__(self, stop_reason: str, text: str = "partial answer"):
+        self._stop_reason = stop_reason
+        self._text = text
+
+    def complete(self, system, messages, tools):
+        return ModelResponse(
+            text=self._text,
+            tool_uses=[],
+            stop_reason=self._stop_reason,
+            raw_content=[{"type": "text", "text": self._text}],
+            usage=Usage(),
+        )
+
+
+def _run_with_stub(stop_reason: str, text: str = "partial answer"):
+    client = CS14Client(base_url="http://unused", dry_run=True)
+    run_ctx = RunContext()
+    ctx = HandlerContext(client=client, run=run_ctx)
+    executor = ToolExecutor(TOOLS, ctx, result_max_chars=4000)
+    settings = Settings(max_turns=5)
+    tracer = Tracer(None)
+    model = _FixedStopReasonModel(stop_reason, text)
+    return run("x", "system", model, anthropic_tools(TOOLS), executor, ctx, settings, tracer)
+
+
+def test_max_tokens_stop_reason_is_not_silently_treated_as_done():
+    # Regression: loop.py used to fold EVERY non-tool_use, non-refusal
+    # stop_reason into the generic "done" branch. A response truncated by
+    # max_tokens (e.g. cut off mid a large JSON tool_use payload) is not a
+    # trustworthy, complete final answer and must be distinguishable from
+    # a real "done".
+    result = _run_with_stub("max_tokens")
+    assert result.reason == "max_tokens"
+    assert result.reason != "done"
+
+
+def test_unrecognized_stop_reason_is_also_not_treated_as_done():
+    # A future/unexpected stop_reason (e.g. "pause_turn") must not be
+    # silently swallowed into "done" either.
+    result = _run_with_stub("pause_turn")
+    assert result.reason == "pause_turn"
+    assert result.reason != "done"
+
+
+def test_end_turn_and_stop_sequence_are_still_treated_as_a_clean_done_answer():
+    # Sanity check the fix doesn't over-correct: genuinely complete
+    # responses (end_turn, or a custom stop_sequence hit) are still "done".
+    for stop_reason in ("end_turn", "stop_sequence"):
+        result = _run_with_stub(stop_reason, text="Done. Share link: /survey/x?lang=en")
+        assert result.reason == "done"
+        assert result.final_text == "Done. Share link: /survey/x?lang=en"
 
 
 def test_trim_context_keeps_first_message_and_recent_rounds():
