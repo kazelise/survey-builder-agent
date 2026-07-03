@@ -58,6 +58,56 @@ class CS14ApiError(Exception):
         super().__init__(f"cs14 API error {status}: {body}")
 
 
+# Fields whose *value* must never reach a log/stderr line verbatim.
+_SENSITIVE_BODY_KEYS = {"password", "token", "access_token", "refresh_token", "secret", "api_key", "authorization"}
+
+
+def _redact(value: Any) -> Any:
+    """Best-effort recursive redaction of credential-shaped fields in an
+    API error body. Handles both a literal sensitive key at any nesting
+    level (e.g. {"password": "..."}) and the FastAPI/Pydantic v2 422
+    validation-error shape, where the submitted value is echoed under a
+    generic "input" key alongside a "loc" path naming which field failed
+    (e.g. {"loc": [..., "password"], "input": "..."}) -- a well-known
+    default behavior that would otherwise carry a plaintext credential
+    straight into whatever's printing the exception."""
+    if isinstance(value, dict):
+        loc = value.get("loc")
+        loc_is_sensitive = isinstance(loc, (list, tuple)) and bool(loc) and str(loc[-1]).lower() in _SENSITIVE_BODY_KEYS
+        redacted = {}
+        for k, v in value.items():
+            if isinstance(k, str) and k.lower() in _SENSITIVE_BODY_KEYS:
+                redacted[k] = "<REDACTED>"
+            elif k == "input" and loc_is_sensitive:
+                redacted[k] = "<REDACTED>"
+            else:
+                redacted[k] = _redact(v)
+        return redacted
+    if isinstance(value, list):
+        return [_redact(v) for v in value]
+    return value
+
+
+def safe_error_text(exc: BaseException) -> str:
+    """Render an exception for logs/stderr with credential-shaped fields
+    redacted -- used specifically at auth-failure print sites
+    (mcp_server.py's build_executor, cli.py's main), which otherwise print
+    a raw CS14ApiError (whose body is the backend's raw JSON/text
+    response) with zero redaction guarantee.
+
+    Deliberately NOT applied to CS14ApiError.body itself or to what
+    executor.py forwards to the model as a tool_result: the model needs
+    the real, unredacted validation error to read and self-correct
+    (DESIGN.md §10), and today's cs14 backend doesn't echo the password in
+    normal login/register error paths anyway -- this is defense in depth
+    for the human/log-facing surface only, not a behavior change to the
+    agent loop.
+    """
+    if isinstance(exc, CS14ApiError):
+        return f"cs14 API error {exc.status}: {_redact(exc.body)}"
+    return str(exc)
+
+
 @dataclass
 class CS14Client:
     base_url: str

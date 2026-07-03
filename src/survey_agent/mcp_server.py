@@ -38,7 +38,7 @@ from mcp.server.stdio import stdio_server
 from .config import Settings
 from .context import HandlerContext, RunContext
 from .executor import ToolExecutor
-from .http_client import CS14Client
+from .http_client import CS14Client, safe_error_text
 from .tools import TOOLS
 from .tools.auth import ensure_researcher
 
@@ -72,7 +72,7 @@ def build_executor(settings: Settings | None = None, *, force_mock: bool | None 
         except Exception as exc:  # noqa: BLE001 - fall back to mock rather than crash the server
             print(
                 f"[survey-agent-mcp] cs14 backend at {settings.cs14_base_url} unreachable "
-                f"({type(exc).__name__}: {exc}); falling back to dry_run/mock mode.",
+                f"({type(exc).__name__}: {safe_error_text(exc)}); falling back to dry_run/mock mode.",
                 file=sys.stderr,
             )
             client.close()

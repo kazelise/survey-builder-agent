@@ -9,7 +9,7 @@ import email.utils
 import httpx
 import pytest
 
-from survey_agent.http_client import CS14ApiError, CS14Client
+from survey_agent.http_client import CS14ApiError, CS14Client, safe_error_text
 
 
 def _client(handler, **kwargs) -> CS14Client:
@@ -139,6 +139,45 @@ def test_retry_after_header_with_rfc7231_http_date_form_does_not_crash():
     assert result == {"id": 1}
     assert len(waits) == 1
     assert waits[0] >= 0.0
+
+
+def test_safe_error_text_redacts_password_and_token_shaped_top_level_fields():
+    # Regression: mcp_server.py's build_executor and cli.py's main both
+    # print(f"...{exc}...") an auth-failure exception straight to stderr
+    # with zero redaction guarantee -- CS14ApiError.__str__ embeds the raw
+    # backend response body verbatim.
+    exc = CS14ApiError(422, {"password": "hunter2", "token": "abc123", "email": "a@b.com"})
+    text = safe_error_text(exc)
+    assert "hunter2" not in text
+    assert "abc123" not in text
+    assert "<REDACTED>" in text
+    assert "a@b.com" in text  # non-secret fields stay readable for debugging
+
+
+def test_safe_error_text_redacts_pydantic_422_loc_input_echo_pattern():
+    # The realistic leak path: FastAPI/Pydantic v2 422 validation-error
+    # details commonly echo the submitted value under a generic "input"
+    # key, correlated with a "loc" path naming which field failed -- not a
+    # literal top-level "password" key.
+    exc = CS14ApiError(
+        422,
+        {"detail": [{"type": "string_too_short", "loc": ["body", "password"], "msg": "...", "input": "hunter2"}]},
+    )
+    text = safe_error_text(exc)
+    assert "hunter2" not in text
+
+
+def test_safe_error_text_falls_back_to_plain_str_for_non_cs14_errors():
+    assert safe_error_text(RuntimeError("boom")) == "boom"
+
+
+def test_cs14_api_error_body_attribute_stays_unredacted_for_the_model_to_read():
+    # executor.py forwards exc.body verbatim to the model as a tool_result
+    # so it can read and self-correct real validation errors (DESIGN.md
+    # §10) -- redaction must be opt-in at the log/stderr call site
+    # (safe_error_text) only, never applied to the raw .body attribute.
+    exc = CS14ApiError(422, {"password": "hunter2"})
+    assert exc.body == {"password": "hunter2"}
 
 
 def test_retry_after_header_with_garbage_value_falls_back_to_computed_delay():

@@ -21,7 +21,7 @@ from pathlib import Path
 from .config import Settings
 from .context import HandlerContext, RunContext
 from .executor import ToolExecutor
-from .http_client import CS14Client
+from .http_client import CS14Client, safe_error_text
 from .loop import RunResult, run as run_loop
 from .model import MockModel, RealModel
 from .prompts import full_system_prompt
@@ -91,7 +91,10 @@ def main(argv: list[str] | None = None) -> int:
         try:
             ensure_researcher(client, settings.cs14_email, settings.cs14_password)
         except Exception as exc:  # noqa: BLE001 - CLI top-level: report and exit, don't traceback
-            print(f"Could not authenticate against cs14 backend at {settings.cs14_base_url}: {exc}", file=sys.stderr)
+            print(
+                f"Could not authenticate against cs14 backend at {settings.cs14_base_url}: {safe_error_text(exc)}",
+                file=sys.stderr,
+            )
             return 2
 
     run_ctx = RunContext()
