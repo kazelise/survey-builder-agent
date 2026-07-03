@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -40,6 +41,44 @@ from survey_agent.rag.index import DEFAULT_EMBEDDINGS_PATH, DEFAULT_INDEX_PATH  
 
 EMBED_BATCH_SIZE = 16
 
+# Secret/PII guard: data/handbook_index.json is a deliberately COMMITTED,
+# public build artifact (README.md documents it as "入库"), so any
+# credential-shaped text in the source docs must never reach it -- this is
+# not hypothetical: a real staging password + a real server IP were once
+# committed to this repo via this exact ingestion path (docs/DEMO_RUNBOOK.md
+# / docs/deployment.md in the cs14 platform repo this index is built from).
+# Best-effort, not a full secret scanner: it catches the two shapes that
+# actually leaked (credential-labeled markdown table cells, raw IPv4
+# literals) as a second line of defense on top of "real docs shouldn't put
+# live secrets in markdown in the first place."
+_SECRET_LABEL_RE = re.compile(
+    r"(\|[^|\n]*(?:password|token|secret|api[_ ]?key|access[_ ]?key|email)[^|\n]*\|\s*)`[^`]+`",
+    re.IGNORECASE,
+)
+_IPV4_RE = re.compile(r"\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b")
+# Loopback/private/unspecified ranges are never a real server's identity —
+# leave them un-redacted so ordinary "run it on 127.0.0.1" doc examples stay
+# readable.
+_SAFE_IP_PREFIXES = ("127.", "10.", "0.0.0.0", "192.168.")
+
+
+def _is_safe_ip(ip: str) -> bool:
+    if ip.startswith(_SAFE_IP_PREFIXES):
+        return True
+    if ip.startswith("172."):
+        second = int(ip.split(".")[1])
+        return 16 <= second <= 31
+    return False
+
+
+def redact_secrets(text: str) -> str:
+    """Strip credential-shaped table values and raw public IPv4 literals out
+    of chunk text before it's written to the committed index or fed to the
+    embedding model."""
+    text = _SECRET_LABEL_RE.sub(lambda m: f"{m.group(1)}`<REDACTED>`", text)
+    text = _IPV4_RE.sub(lambda m: m.group(0) if _is_safe_ip(m.group(0)) else "<REDACTED-ip>", text)
+    return text
+
 
 def build_chunks() -> list[dict]:
     chunks: list[dict] = []
@@ -50,7 +89,7 @@ def build_chunks() -> list[dict]:
                     "id": chunk.id,
                     "source_file": chunk.source_file,
                     "heading": chunk.heading,
-                    "text": chunk.text,
+                    "text": redact_secrets(chunk.text),
                     "order": chunk.order,
                 }
             )
