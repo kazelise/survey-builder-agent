@@ -85,7 +85,7 @@ Agent 解析意图（语言、A/B 分组、问卷风格等）
 横切关系：
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
 │ MCP Server   │    │ Evals/       │    │ Tests        │
-│ (FastMCP)    │    │ Runner       │    │ (pytest)     │
+│ (MCP SDK)    │    │ Runner       │    │ (pytest)     │
 └──────────────┘    └──────────────┘    └──────────────┘
    共享 TOOLS schema，共享 Handlers，共享 HTTP 层
 ```
@@ -351,7 +351,7 @@ cs14/agent/
 │   ├── executor.py             # ToolExecutor：名字→handler 分发、schema 验证、结果截断、异常→is_error 映射
 │   ├── trace.py                # Tracer：JSONL 写入器；per-round 摘要；成本计算；RunSummary
 │   ├── prompts.py              # SYSTEM_PROMPT（短） + 语言/AB 启发式提示块
-│   └── mcp_server.py           # FastMCP 服务器，暴露同样的 TOOLS via stdio；`uv run survey-mcp`
+│   └── mcp_server.py           # 低层 mcp.server.lowlevel.Server（非 FastMCP），暴露同样的 TOOLS via stdio；`uv run survey-agent-mcp`
 │
 ├── scripts/
 │   ├── demo.sh                 # E2E 演示：启动后端、种子研究者、运行 3 个指令
@@ -426,7 +426,7 @@ uv run survey-agent "做一个Likert量表问卷，中英双语" \
 
 ### 例 4：MCP 服务器
 ```bash
-uv run survey-mcp
+uv run survey-agent-mcp
 # 在另一个终端：Claude Desktop 或其他 MCP 客户端可连接并使用这 13 个工具
 ```
 

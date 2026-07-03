@@ -84,7 +84,7 @@ cs14/agent/
 │   │
 │   ├── prompts.py              # SYSTEM_PROMPT (short, §6.3) + the language/AB heuristics text.
 │   │
-│   └── mcp_server.py           # FastMCP server exposing the same TOOLS over MCP (stdio). `uv run survey-mcp`.
+│   └── mcp_server.py           # Low-level `mcp.server.lowlevel.Server` exposing the same TOOLS over MCP (stdio), not FastMCP. `uv run survey-agent-mcp`.
 │
 ├── scripts/
 │   ├── demo.sh                 # end-to-end demo: bootstrap backend, seed researcher, run 3 instructions
@@ -267,14 +267,20 @@ Cost is computed from a price table in `config.py` keyed by model id (`opus-4-8:
 
 ## 11. MCP server (shared schema)
 
-`mcp_server.py` builds a `FastMCP` server and registers **the same `TOOLS` list**. The sharing mechanism:
+`mcp_server.py` builds a low-level `mcp.server.lowlevel.Server` (not
+`FastMCP` — deliberately, so the JSON Schema in `ToolSpec.input_schema` is
+reused byte-for-byte instead of being re-derived from a Python function
+signature, which would risk silently drifting from the schema the SDK loop
+actually sends the model) and registers **the same `TOOLS` list** the SDK
+loop uses. The sharing mechanism:
 
 - `tools/schema.py::ToolSpec` is the single source of truth `{name, description, input_schema (JSON Schema), handler}`.
-- `anthropic_tools()` renders `ToolSpec`→ SDK tool dicts for the loop.
-- `mcp_tools()` iterates the same specs and calls `@mcp.tool()` with the spec's name/description/schema, wrapping the identical `handler(client, args)`.
-- `test_schema_parity.py` asserts the two renderings expose the same names + input schemas, so they can't drift.
+- `anthropic_tools()` renders `ToolSpec` → SDK tool dicts for the loop.
+- `mcp_server.py`'s `@server.list_tools()` handler renders the same specs → MCP `types.Tool` objects directly (name/description/inputSchema straight from the `ToolSpec`, nothing re-derived).
+- `@server.call_tool()` dispatches every call through the identical `ToolExecutor.run()` the SDK loop uses, so `ToolError`/`CS14ApiError` map to `isError: true` the same way regardless of which caller is driving.
+- `tests/test_tools_schema.py` locks down the invariants both renderings depend on (unique names, strict schemas, every `required` key present in `properties`); `scripts/mcp_smoke.py` drives the actual MCP `initialize`/`tools/list` handshake end-to-end and asserts all 13 tools are listed with schemas.
 
-The MCP server constructs its own `CS14Client` (creds from env) and runs over stdio (`uv run survey-mcp`). Result: any MCP-capable host (Claude Desktop, another agent) gets the exact same 13 tools, backed by the same handlers and the same backend, with zero duplicated schema.
+The MCP server constructs its own `CS14Client` (creds from env, falling back to `dry_run` if the backend is unreachable or `CS14_MOCK=1` is set) and runs over stdio (`uv run survey-agent-mcp`). Result: any MCP-capable host (Claude Desktop, Claude Code, another agent) gets the exact same 13 tools, backed by the same handlers and the same backend, with zero duplicated schema.
 
 ---
 
@@ -324,7 +330,7 @@ uv run survey-agent "" --mock evals/cases/01_bilingual_ab_xhs.json --trace trace
 uv run survey-agent "..." --base-url https://my-proxy/v1 --model some-model
 
 # MCP server (same tools)
-uv run survey-mcp
+uv run survey-agent-mcp
 
 # evals
 uv run python -m evals.runner            # mock, all cases
