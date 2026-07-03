@@ -16,12 +16,12 @@ def test_redacts_password_and_email_table_cells():
         "| Field | Value |\n"
         "|-------|-------|\n"
         "| Sign-in URL | `https://cs14.kazelis.top/auth` |\n"
-        "| Email | `***REMOVED***` |\n"
-        "| Password | `***REMOVED***` |"
+        "| Email | `researcher.demo@example.com` |\n"
+        "| Password | `Fak3Password!Demo` |"
     )
     redacted = redact_secrets(text)
-    assert "***REMOVED***" not in redacted
-    assert "***REMOVED***" not in redacted
+    assert "Fak3Password!Demo" not in redacted
+    assert "researcher.demo@example.com" not in redacted
     assert "<REDACTED>" in redacted
     # Non-secret rows are left alone.
     assert "https://cs14.kazelis.top/auth" in redacted
@@ -35,9 +35,9 @@ def test_redacts_token_and_secret_labeled_rows_case_insensitively():
 
 
 def test_redacts_public_ipv4_literal():
-    text = "e.g. `203.0.113.0.sslip.io`"
+    text = "e.g. `203.0.113.56.sslip.io`"
     redacted = redact_secrets(text)
-    assert "203.0.113.0" not in redacted
+    assert "203.0.113.56" not in redacted
     assert "sslip.io" in redacted  # only the address is redacted, not the whole example
 
 
