@@ -13,6 +13,8 @@ import random
 import re
 import time
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from typing import Any
 
 import httpx
@@ -21,6 +23,30 @@ import httpx
 # are NOT retried: retrying a "language code invalid" response can't fix it,
 # only the model changing its arguments can (DESIGN.md §10).
 RETRYABLE_STATUS = {429, 500, 502, 503, 504}
+
+
+def _parse_retry_after(value: str | None) -> float | None:
+    """Retry-After (RFC 7231 §7.1.3) may be either delta-seconds (an
+    integer) or an HTTP-date (e.g. "Wed, 21 Oct 2026 07:28:00 GMT") --
+    `float(value)` alone raises ValueError on the date form and on any
+    other malformed value. Falls back to None (the caller then uses the
+    computed exponential backoff delay) instead of ever letting a parse
+    failure abort the request."""
+    if not value:
+        return None
+    try:
+        return float(value)
+    except ValueError:
+        pass
+    try:
+        parsed = parsedate_to_datetime(value)
+    except (TypeError, ValueError):
+        return None
+    if parsed is None:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return max((parsed - datetime.now(timezone.utc)).total_seconds(), 0.0)
 
 
 class CS14ApiError(Exception):
@@ -170,7 +196,7 @@ class CS14Client:
 
             if resp.status_code in RETRYABLE_STATUS and attempt < self.max_retries:
                 retry_after = resp.headers.get("Retry-After")
-                self._backoff_sleep(delay, float(retry_after) if retry_after else None)
+                self._backoff_sleep(delay, _parse_retry_after(retry_after))
                 delay = min(delay * 2, self.retry_max_delay)
                 continue
 

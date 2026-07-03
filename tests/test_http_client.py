@@ -4,6 +4,8 @@ differences, and error mapping (DESIGN.md §5, §10)."""
 
 from __future__ import annotations
 
+import email.utils
+
 import httpx
 import pytest
 
@@ -111,3 +113,48 @@ def test_retry_after_header_is_honored_on_429():
     result = client.get_survey(1)
     assert result == {"id": 1}
     assert waits == [0.0]
+
+
+def test_retry_after_header_with_rfc7231_http_date_form_does_not_crash():
+    # Regression: Retry-After (RFC 7231 §7.1.3) may be an HTTP-date string
+    # instead of delta-seconds, e.g. "Wed, 21 Oct 2026 07:28:00 GMT".
+    # `float(retry_after)` on that form raised ValueError, uncaught
+    # anywhere in _request, aborting the whole request instead of falling
+    # back to the computed exponential backoff delay.
+    calls = {"n": 0}
+    retry_date = email.utils.formatdate(usegmt=True)  # RFC 1123 HTTP-date, "now"
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        if calls["n"] == 1:
+            return httpx.Response(429, headers={"Retry-After": retry_date}, json={"detail": "slow down"})
+        return httpx.Response(200, json={"id": 1})
+
+    client = _client(handler)
+    waits: list[float] = []
+    client.sleep_fn = lambda seconds: waits.append(seconds)
+
+    result = client.get_survey(1)  # must not raise ValueError
+
+    assert result == {"id": 1}
+    assert len(waits) == 1
+    assert waits[0] >= 0.0
+
+
+def test_retry_after_header_with_garbage_value_falls_back_to_computed_delay():
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        if calls["n"] == 1:
+            return httpx.Response(429, headers={"Retry-After": "not-a-valid-value"}, json={"detail": "slow down"})
+        return httpx.Response(200, json={"id": 1})
+
+    client = _client(handler)
+    waits: list[float] = []
+    client.sleep_fn = lambda seconds: waits.append(seconds)
+
+    result = client.get_survey(1)  # must not raise ValueError
+
+    assert result == {"id": 1}
+    assert len(waits) == 1
