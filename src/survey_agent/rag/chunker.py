@@ -109,15 +109,34 @@ def _hard_split(text: str, max_chars: int, overlap_chars: int) -> list[str]:
     return out
 
 
+def _seed_next_chunk(prev_chunk: str, unit: str, overlap_chars: int, joiner: str, max_chars: int) -> str:
+    """Seed the next chunk with up to `overlap_chars` of `prev_chunk`'s
+    tail plus `unit`, shrinking the tail (never `unit` itself -- the
+    caller guarantees `len(unit) <= max_chars`) until the seed actually
+    fits the budget. A fixed-length tail is not safe to prepend
+    unconditionally: when `unit` is itself close to max_chars, tail +
+    joiner + unit silently overshoots by ~overlap_chars (see
+    tests/test_chunker.py)."""
+    tail_len = overlap_chars
+    while tail_len > 0:
+        tail = prev_chunk[-tail_len:]
+        candidate = f"{tail}{joiner}{unit}"
+        if len(candidate) <= max_chars:
+            return candidate
+        tail_len -= 1
+    return unit  # shrunk to no tail at all; `unit` alone is always <= max_chars
+
+
 def _pack(units: list[str], max_chars: int, overlap_chars: int, joiner: str, split_oversized) -> list[str]:
     """Generic greedy packer shared by both granularities below: accumulate
     `units` (paragraphs, or -- one level down -- lines) joined by `joiner`
     while under max_chars; when the next unit would overflow the current
     chunk, close it and seed the next one with the trailing
-    `overlap_chars` of the just-closed chunk. A unit that's too big on its
-    own is flushed and handed to `split_oversized` for a finer-grained
-    split, independent of packing position -- checking this first avoids
-    ever building an unbounded chunk."""
+    `overlap_chars` of the just-closed chunk (shrunk if needed to still
+    fit -- see _seed_next_chunk). A unit that's too big on its own is
+    flushed and handed to `split_oversized` for a finer-grained split,
+    independent of packing position -- checking this first avoids ever
+    building an unbounded chunk."""
     if not units:
         return []
 
@@ -137,8 +156,7 @@ def _pack(units: list[str], max_chars: int, overlap_chars: int, joiner: str, spl
             continue
 
         chunks.append(current)
-        tail = current[-overlap_chars:] if overlap_chars else ""
-        current = f"{tail}{joiner}{unit}" if tail else unit
+        current = _seed_next_chunk(current, unit, overlap_chars, joiner, max_chars)
 
     if current:
         chunks.append(current)
