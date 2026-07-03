@@ -60,7 +60,13 @@ class CaseResult:
     def passed(self) -> bool:
         if self.error is not None:
             return False
-        return self.seq.score >= SEQUENCE_PASS_THRESHOLD and self.terminal.passed
+        # The ratio alone is not enough: dropping exactly one call from a
+        # >=5-item expected_sequence yields (n-1)/n >= SEQUENCE_PASS_THRESHOLD
+        # for any n>=5, which would silently PASS a run that never made a
+        # mandatory mutating call at all. `seq.missing` (a Counter diff) is
+        # the actual enforcement of "any missing mandatory mutation fails it
+        # outright" — see the comment above SEQUENCE_PASS_THRESHOLD.
+        return self.seq.score >= SEQUENCE_PASS_THRESHOLD and not self.seq.missing and self.terminal.passed
 
 
 def load_cases(pattern: str | None = None) -> list[dict]:
