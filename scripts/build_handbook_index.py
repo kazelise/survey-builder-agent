@@ -21,12 +21,17 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import time
 from pathlib import Path
 
 AGENT_ROOT = Path(__file__).resolve().parent.parent
-CS14_ROOT = AGENT_ROOT.parent
+# Standalone repo: point CS14_REPO_ROOT at a local checkout of
+# kazelise/usyd-cs14-1 to (re)build the index from its docs/ + docs-site/.
+# Falls back to the parent dir, which is correct when this project is
+# nested inside the cs14 repo as agent/.
+CS14_ROOT = Path(os.environ.get("CS14_REPO_ROOT", str(AGENT_ROOT.parent)))
 sys.path.insert(0, str(AGENT_ROOT / "src"))
 
 from survey_agent.rag.chunker import chunk_markdown_file, iter_doc_files  # noqa: E402

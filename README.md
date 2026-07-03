@@ -2,6 +2,8 @@
 
 **一行自然语言 → 发布完整问卷**。将研究者的模糊指令转化为 cs14 平台上的已发布问卷，通过多轮函数调用驱动后端 REST API。
 
+> **独立项目**：本仓库是 [CS14 社会实验研究平台](https://github.com/kazelise/usyd-cs14-1)（COMP5703 capstone，本人任团队 leader）的配套 Agent，仅通过 HTTP 与平台交互、零代码依赖，故独立成仓。开箱即用：`--mock --dry-run` 全离线演示，无需后端与 API key；RAG 检索的 BM25 索引已入库，重建索引需 `CS14_REPO_ROOT` 指向 cs14 的本地 checkout。
+
 ## 项目定位
 
 ### 核心流程
