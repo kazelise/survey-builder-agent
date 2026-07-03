@@ -1,0 +1,1359 @@
+{
+  "version": 1,
+  "built_at": "2026-07-03T05:49:47Z",
+  "source_root": "docs/*.md + docs-site/docs/**/*.md",
+  "chunk_count": 193,
+  "chunks": [
+    {
+      "id": "docs/DEMO_RUNBOOK.md::0",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase",
+      "text": "Use this alongside the README **Demo Showcase** section. It gathers examiner-facing URLs, seeded share codes, export talk-track wording, disposable credentials policy, and what data is **not** stored. The scripted **20‑minute meeting walkthrough** is still at the bottom of this file.\n\n---",
+      "order": 0
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::1",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Canonical URLs",
+      "text": "| What | URL |\n|------|-----|\n| App (researcher admin + participant entry) | <https://cs14.kazelis.top/> |\n| Participant surveys | `https://cs14.kazelis.top/survey/<SHARE_CODE>` (often via `/start` for consent/calibration) |\n| Public documentation site | <https://cs14-docs.kazelis.top/> |\n| Swagger / OpenAPI | local stack only — <http://localhost:8000/docs> (not exposed in production) |\n\n---",
+      "order": 1
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::2",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Disposable demo researcher account",
+      "text": "Use a **researcher** login only (never a participant vault). Holds **demo / synthetic surveys only** — it **may be reset** between rehearsals or deployments.\n\nMaintainers **must keep this aligned** with whoever seeds production: configure `DEMO_RESEARCHER_EMAIL` / `DEMO_RESEARCHER_PASSWORD` env vars **before** `python -m scripts.seed_client_demo`, or edit this table + README together whenever the seeded identity changes after a DB wipe.\n\nFor the **staging host** seeded by the COMP5703 team:\n\n| Field | Value |\n|-------|-------|\n| Sign-in URL | `https://cs14.kazelis.top/auth` |\n| Email | `<REDACTED>` |\n| Password | `<REDACTED>` |",
+      "order": 2
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::3",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Disposable demo researcher account",
+      "text": "Field | Value |\n|-------|-------|\n| Sign-in URL | `https://cs14.kazelis.top/auth` |\n| Email | `<REDACTED>` |\n| Password | `<REDACTED>` |\n\n> Provisioned fresh on 2026-05-31. This login currently owns **no** seeded surveys — the seeded decks below belong to whoever last ran `seed_client_demo`. The participant share links are public and work regardless of this account; to also show the seeded decks **inside this researcher dashboard**, re-run the seed with `DEMO_RESEARCHER_EMAIL=***REMOVED***`.\n\nSeed defaults (`cs14.demo@example.com` / `change-me-client-demo`) are only for unattended local smoke runs — swap them via env vars for any shared environment.\n\n---",
+      "order": 3
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::4",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Seeded datasets (canonical `seed_client_demo`)",
+      "text": "Rebuild anytime from `backend/` (or backend container):\n\n```bash\npython -m scripts.seed_client_demo\n```\n\nThe seed is **idempotent** on fixed share codes below: wipes and recreates each demo survey each run.\n\n| Survey | Posts | Calibration / gaze demo | Groups |\n|--------|-------|---------------------------|--------|\n| **Main walkthrough** `CS14DEMO2026` | **six** stimulus cards (`MAIN_SURVEY_POST_CAP`), each with Likert engagement | ✅ Full calibration + seeded responses + gaze/click/comments | **`Control`** / **`High engagement cues`** (`group_names` in seed) |\n| **Gallery** `CS14X2026`, `CS14IG2026`, `CS14RED2026`, `CS14TRUTH26`, `CS14BSKY2026`, `CS14DOUYIN26` | **four** curated cards each (`GALLERY_POST_CAP`) | ❌ Presentation-only previews (tracking off per survey shell) | Same labels for consistency |",
+      "order": 4
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::5",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Seeded datasets (canonical `seed_client_demo`)",
+      "text": "N26` | **four** curated cards each (`GALLERY_POST_CAP`) | ❌ Presentation-only previews (tracking off per survey shell) | Same labels for consistency |\n\nStimulus URLs embed **controlled copy** (`*.example`, lab vignettes, or stable CDN-free summaries) — demo runs avoid live Open Graph fetches that could fail mid-talk.\n\nTranslations: English and Chinese strings are seeded per post/question. Each survey's **`supported_languages`** lists exactly the locales a participant can pick from — the picker and analytics enforce that set.\n\n---",
+      "order": 5
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::6",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Main walkthrough + platform gallery links",
+      "text": "**Primary examiner path** — calibration → scroll → interactions → researcher analytics/export:\n\n| Role | Purpose | Share code | Link |\n|------|---------|------------|------|\n| **Main walkthrough** | Default credibility-study storyline | **CS14DEMO2026** | <https://cs14.kazelis.top/survey/CS14DEMO2026> |\n\n**Platform style gallery** — same codebase, tuned layouts:",
+      "order": 6
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::7",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Main walkthrough + platform gallery links",
+      "text": "lity-study storyline | **CS14DEMO2026** | <https://cs14.kazelis.top/survey/CS14DEMO2026> |\n\n**Platform style gallery** — same codebase, tuned layouts:\n\n| Share code | What to say | Participant link |\n|------------|-------------|-------------------|\n| **CS14X2026** | X-style **timeline** | <https://cs14.kazelis.top/survey/CS14X2026> |\n| **CS14IG2026** | **Instagram-like** grid | <https://cs14.kazelis.top/survey/CS14IG2026> |\n| **CS14RED2026** | **Xiaohongshu / RED** collage | <https://cs14.kazelis.top/survey/CS14RED2026> |\n| **CS14TRUTH26** | Truth Social–motif column | <https://cs14.kazelis.top/survey/CS14TRUTH26> |\n| **CS14BSKY2026** | Bluesky-style column | <https://cs14.kazelis.top/survey/CS14BSKY2026> |\n| **CS14DOUYIN26** | Douyin/TikTok **vertical feed** | <https://cs14.kazelis.top/survey/CS14DOUYIN26> |",
+      "order": 7
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::8",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Main walkthrough + platform gallery links",
+      "text": "ttps://cs14.kazelis.top/survey/CS14BSKY2026> |\n| **CS14DOUYIN26** | Douyin/TikTok **vertical feed** | <https://cs14.kazelis.top/survey/CS14DOUYIN26> |\n\nAdd `?lang=en` or `?lang=zh-CN` to force a participant locale preview (only languages enabled on the survey are honoured; others fall back to its default).\n\nOpening a participant link assigns a synthetic session automatically—no standalone “participant login”.\n\n---",
+      "order": 8
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::9",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Quick reference (paste into meeting chat)",
+      "text": "| What | Link / value |\n| --- | --- |\n| Public demo URL (researcher + participant) | `https://cs14.kazelis.top/` |\n| API base | `https://cs14.kazelis.top/api/v1` (Swagger only on the local stack: `http://localhost:8000/docs`) |\n| Public docs site | `https://cs14-docs.kazelis.top/` |\n| Participant deep link (EN) | `https://cs14.kazelis.top/survey/CS14DEMO2026?lang=en` |\n| Participant deep link (中文) | `https://cs14.kazelis.top/survey/CS14DEMO2026?lang=zh-CN` |\n| Project docs index | [`docs/README.md`](./README.md); deeper guides: [`researcher-user-guide.md`](./researcher-user-guide.md), [`deployment.md`](./deployment.md), tracking docs |\n| Repo demo seed | [`backend/scripts/seed_client_demo.py`](../backend/scripts/seed_client_demo.py) |\n\n---",
+      "order": 9
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::10",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Automated smoke checks (no credentials)",
+      "text": "`scripts/verify_demo_public.sh` curls `/health` plus each published survey for **both** English and simplified Chinese payloads.\n\nDefaults include **all seven** seeded share codes (`CS14DEMO2026` plus the six gallery codes). Override comma-free lists via `DEMO_SHARE_CODES`:\n\n```bash\nDEMO_HOST='cs14.kazelis.top' ./scripts/verify_demo_public.sh\n\n# Local stack / plain HTTP smoke\nDEMO_HOST='localhost:8000' DEMO_SCHEME='http' ./scripts/verify_demo_public.sh\n\n# Narrow check\nDEMO_SHARE_CODES='CS14DEMO2026' DEMO_HOST='cs14.kazelis.top' ./scripts/verify_demo_public.sh\n```\n\n---",
+      "order": 10
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::11",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > What to say — data & privacy (short script)",
+      "text": "1. **“We simulate feeds for experiments.”** Engagement numbers/comments are scripted. Participants never see unpublished studies.\n\n2. **“Attention evidence is behavioural—not a recording vault.”** MediaPipe-derived gaze/coordinates arrive from the webcam stream. **Raw video/JPEG snapshots are not stored.**\n\n3. **“Calibration gates quality.”** Nine-point prompts produce `overall_quality` (`good` / `acceptable` / `poor`) from detection rate & sample depth before analytics ingest trust.\n\n4. **“Exports are aggregates plus row-level behavioural traces.”** Admin **Analytics → Export Summary** emits JSON KPIs (`calibration_success_rate`, group splits, clicks/likes/comments/shares). Row dumps correspond to Postgres tables summarized below and [`tracking-data-flow.md`](./tracking-data-flow.md).\n\n---",
+      "order": 11
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::12",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Export surfaces in this codebase",
+      "text": "| Surface | Format | Audience |\n|---------|--------|----------|\n| **Admin Analytics → Export Summary** | JSON (`survey`, `summary`, `exported_at`) — see [`frontend/app/admin/analytics/page.tsx`](../frontend/app/admin/analytics/page.tsx) | Quick deck / examiner walkthrough |\n| **Full survey export** | CSV/JSON via `GET /surveys/{id}/export` (when enabled on branch) plus table-level dumps documented for thesis work |\n\nKey summary fields surfaced today:\n\n- `calibration_success_rate`\n- Participant counts plus interaction totals **per experimental group**\n- Post-level aggregates (clicks/likes/comments/shares/participant chatter)\n\n---",
+      "order": 12
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::13",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Field dictionary — where calibration, gaze, clicks, engagement live",
+      "text": "High-level Postgres mapping — **privacy: no persisted video**.",
+      "order": 13
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::14",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Field dictionary — where calibration, gaze, clicks, engagement live > `survey_responses`",
+      "text": "| Column / concept | Meaning |\n|------------------|---------|\n| `assigned_group` | Random A/B group index |\n| `language` | Browser locale |\n| `status` | `in_progress`, `completed`, `flagged`, etc. |\n| `user_agent`, `screen_*` | Device context |\n| `participant_fingerprint` | Salted duplicate-detection hash (**not** raw PII) |",
+      "order": 14
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::15",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Field dictionary — where calibration, gaze, clicks, engagement live > `calibration_sessions` + `calibration_points`",
+      "text": "Face detection rate, per-point iris samples (**numeric only**).",
+      "order": 15
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::16",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Field dictionary — where calibration, gaze, clicks, engagement live > `gaze_records`",
+      "text": "Timestamped XY gaze estimates + iris features tied to foreground `post_id`.",
+      "order": 16
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::17",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Field dictionary — where calibration, gaze, clicks, engagement live > `click_records`",
+      "text": "`target_element` captures semantic hotspots (`like_button`, `headline`, …).",
+      "order": 17
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::18",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Field dictionary — where calibration, gaze, clicks, engagement live > `participant_interactions` & participant comments",
+      "text": "Distinct tables for scripted likes/comments vs participant-authored chatter.\n\nInterpret “attention confidence” as engineering trust—not clinical diagnosis.\n\n---",
+      "order": 18
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::19",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Sanity checklist before presenting",
+      "text": "1. Load app + docs on eduroam/mobile hotspot once.\n2. Disposable researcher login → verify each share-code survey exists server-side if you changed prod data.\n3. Incognito **`CS14DEMO2026`** → jog through calibration sandbox once.\n4. Run `./scripts/verify_demo_public.sh` from your laptop (~30 seconds).\n5. Download analytics/export JSON locally in case corp browsers block blobs.\n\n---",
+      "order": 19
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::20",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > 20‑minute scripted walkthrough",
+      "text": "Use these timings verbatim where helpful; deepen translation/analytics discussions if stakeholders ask.",
+      "order": 20
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::21",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > 20‑minute scripted walkthrough > Before the meeting (5 min)",
+      "text": "- Chrome/Edge; pre-grant camera for `https://cs14.kazelis.top`.\n- Sign in disposable researcher JWT **before** the call.\n- Participant path: secondary window/incognito preserves “fresh participant” illusion.\n- Optional backup JSON export if network flaky.\n\nMinute **0‑2 framing:** Multilingual simulated feeds + optional webcam gaze—not clinical eye trackers.\n\nMinute **2‑8 researcher:** Admin Surveys → show six-card deck, bilingual fields, **`Control` vs `High engagement cues` overrides**, gaze interval (1 Hz demo default), translations panel, publish state (**never flash `.env` / API secrets**).\n\nMinute **8‑14 participant:** Open share link HTTPS → toggle `zh-CN` briefly → calibration story → interact with feed + Likert.\n\nMinute **14‑18 data-out:** Analytics dashboard + export artefacts (explain anonymised IDs, calibration gating columns).",
+      "order": 21
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::22",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > 20‑minute scripted walkthrough > Before the meeting (5 min)",
+      "text": "interact with feed + Likert.\n\nMinute **14‑18 data-out:** Analytics dashboard + export artefacts (explain anonymised IDs, calibration gating columns).\n\nMinute **18‑20 Q&A:** Highlight privacy ledger, indicative gaze accuracy, OG fetch caveat (seed sidesteps bots), leaked participant-token rate-limit risk acceptable for seminar recruitment only.\n\n<details>\n<summary>Camera troubleshooting cheatsheet</summary>\n\n| Symptom | Mitigation |\n| --- | --- |\n| No HTTPS/camera prompt | Confirm `https://`, reset site permission, retry incognito. |\n| OS camera blocked | Re-enable privacy settings for browser. |\n| Face detection red | Improve lighting/camera distance—call it expected variance. |\n| Calibration `poor` | Narrate as QA signal; surveys can gate completion. |\n\n</details>",
+      "order": 22
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::23",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > 20‑minute scripted walkthrough > Quick validation curls",
+      "text": "```bash\ncurl -sf https://cs14.kazelis.top/health\ncurl -sf \"https://cs14.kazelis.top/api/v1/surveys/public/CS14DEMO2026?language=zh-CN\" | head -c 200\ncurl -sf \"https://cs14.kazelis.top/api/v1/surveys/public/CS14BSKY2026?language=en\" | head -c 120\n```",
+      "order": 23
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::24",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Slide-wording guardrails",
+      "text": "- ✅ “Basic webcam gaze with nine-point calibration gating.”\n- ✅ “Indicative fixation patterns for comparative analysis.”\n- ❌ Avoid “clinical grade”, “sub-degree certainty”, “biometric identification”.",
+      "order": 24
+    },
+    {
+      "id": "docs/DEMO_RUNBOOK.md::25",
+      "source_file": "docs/DEMO_RUNBOOK.md",
+      "heading": "Demo runbook — CS14 public showcase > Related docs",
+      "text": "- [`tracking-data-flow.md`](./tracking-data-flow.md)\n- [`tracking-api.md`](./tracking-api.md)\n- [`architecture.md`](./architecture.md)",
+      "order": 25
+    },
+    {
+      "id": "docs/README.md::0",
+      "source_file": "docs/README.md",
+      "heading": "CS14 documentation index",
+      "text": "Human-facing docs live in this directory. For deployment and live-demo scripts, start with [`deployment.md`](./deployment.md) and [`DEMO_RUNBOOK.md`](./DEMO_RUNBOOK.md). The repository root [`README.md`](../README.md) adds a condensed **Demo Showcase** table beside this index.\n\n**Public demo smoke (no secrets):** [`scripts/verify_demo_public.sh`](../scripts/verify_demo_public.sh) — curls `/health` **and each published demo share code** (`CS14DEMO2026` + six gallery codes by default) for `en` + `zh`; override hosts, schemes (`DEMO_SCHEME`), or narrowed code lists via env vars spelled out in the script header.",
+      "order": 0
+    },
+    {
+      "id": "docs/README.md::1",
+      "source_file": "docs/README.md",
+      "heading": "CS14 documentation index",
+      "text": "| Document | Audience | Purpose |\n| --- | --- | --- |\n| [`DEMO_RUNBOOK.md`](./DEMO_RUNBOOK.md) | Presenters | ~20-minute client meeting script: URLs, timings, slide wording for gaze claims, export, camera fallback |\n| [`deployment.md`](./deployment.md) | Operators | Prod host layout, `.env`, Caddy, Compose commands, HTTPS/CORS/smoke checklist |\n| [`researcher-user-guide.md`](./researcher-user-guide.md) | Researchers | Building surveys, translations, publishing, export |\n| [`CS14_ACCEPTANCE_CHECKLIST.md`](./CS14_ACCEPTANCE_CHECKLIST.md) | Team | Requirement vs implementation matrix |\n| [`architecture.md`](./architecture.md) and docs-site Project pages | Engineers / client | Subsystem overview, frontend design, database design, API reference |",
+      "order": 1
+    },
+    {
+      "id": "docs/README.md::2",
+      "source_file": "docs/README.md",
+      "heading": "CS14 documentation index",
+      "text": "cture.md`](./architecture.md) and docs-site Project pages | Engineers / client | Subsystem overview, frontend design, database design, API reference |\n| [`tracking-api.md`](./tracking-api.md), [`tracking-data-flow.md`](./tracking-data-flow.md), [`tracking-design-decisions.md`](./tracking-design-decisions.md) | Engineers | Calibration/gaze API contracts and design rationale |",
+      "order": 2
+    },
+    {
+      "id": "docs/README.md::3",
+      "source_file": "docs/README.md",
+      "heading": "CS14 documentation index",
+      "text": "**VitePress site:** source under [`docs-site/docs/`](../docs-site/docs/). It is published at `https://cs14-docs.kazelis.top/`; run `cd docs-site && npm install && npm run dev` locally if you want a browsable sidebar.",
+      "order": 3
+    },
+    {
+      "id": "docs/architecture.md::0",
+      "source_file": "docs/architecture.md",
+      "heading": "Architecture > System Overview",
+      "text": "```\n┌───────────────────┐         ┌───────────────────────┐\n│  Researcher        │         │  Participant           │\n│  (Admin UI)        │         │  (Survey Page)         │\n└────────┬──────────┘         └────────┬──────────────┘\n         │                             │\n         ▼                             ▼\n┌──────────────────────────────────────────────────────┐\n│  Frontend (Next.js + React + Tailwind)               │\n│                                                      │\n│  /admin/*              Survey editor    [Frontend A] │\n│  /survey/[shareCode]   Participant feed [Frontend B] │\n└────────────────────────┬─────────────────────────────┘\n                         │  REST API (JSON)\n┌────────────────────────▼─────────────────────────────┐\n│  Backend (FastAPI)                                    │\n│                                                      │",
+      "order": 0
+    },
+    {
+      "id": "docs/architecture.md::1",
+      "source_file": "docs/architecture.md",
+      "heading": "Architecture > System Overview",
+      "text": "────▼─────────────────────────────┐\n│  Backend (FastAPI)                                    │\n│                                                      │\n│  /api/v1/auth/*        Authentication    [Backend A] │\n│  /api/v1/surveys/*     Survey + Post CRUD[Backend A/B]│\n│  /api/v1/tracking/*    Gaze + Click      [Backend C] │\n└────────┬─────────────────────────────────────────────┘\n         │\n    ┌────▼────┐\n    │PostgreSQL│\n    └──────────┘\n```",
+      "order": 1
+    },
+    {
+      "id": "docs/architecture.md::2",
+      "source_file": "docs/architecture.md",
+      "heading": "Architecture > Data Flow: Complete Survey Session",
+      "text": "```\nResearcher Side:\n1. Register + Login                    POST /auth/register, /auth/login\n2. Create survey (set A/B groups)      POST /surveys\n3. Add posts by URL (OG auto-fetch)    POST /surveys/{id}/posts\n4. Override title, set fake likes etc  PATCH /surveys/{id}/posts/{pid}\n5. Add fake comments to posts          POST /surveys/{id}/posts/{pid}/comments\n6. Publish survey                      POST /surveys/{id}/publish → share_code\n\nParticipant Side:\n7. Open share link → random group      POST /surveys/{share_code}/start\n8. (Optional) Webcam calibration       POST /tracking/calibration/sessions\n9. View posts, like/comment/click      POST /surveys/responses/{id}/interact\n10. Gaze data sent in batches          POST /tracking/gaze\n11. Click data sent in batches         POST /tracking/clicks\n12. Complete survey                    POST /surveys/responses/{id}/complete",
+      "order": 2
+    },
+    {
+      "id": "docs/architecture.md::3",
+      "source_file": "docs/architecture.md",
+      "heading": "Architecture > Data Flow: Complete Survey Session",
+      "text": "racking/gaze\n11. Click data sent in batches         POST /tracking/clicks\n12. Complete survey                    POST /surveys/responses/{id}/complete\n\nResearcher Side:\n13. Export all data                    GET /surveys/{id}/export\n```",
+      "order": 3
+    },
+    {
+      "id": "docs/architecture.md::4",
+      "source_file": "docs/architecture.md",
+      "heading": "Architecture > Database Tables (10 tables)",
+      "text": "```\nresearchers              [Backend A]  — researcher accounts\nsurveys                  [Backend A]  — surveys with A/B group config\nsurvey_posts             [Backend B]  — posts with OG metadata + fake numbers\npost_comments            [Backend B]  — fake comments by researcher\nsurvey_responses         [Backend A/B]— participant sessions + group assignment\nparticipant_interactions [Backend A/B]— likes, comments, clicks by participant\ncalibration_sessions     [Backend C]  — webcam calibration sessions\ncalibration_points       [Backend C]  — calibration point data\ngaze_records             [Backend C]  — continuous gaze XY stream\nclick_records            [Backend C]  — mouse click positions\n```",
+      "order": 4
+    },
+    {
+      "id": "docs/architecture.md::5",
+      "source_file": "docs/architecture.md",
+      "heading": "Architecture > Key Design Decisions",
+      "text": "**OG Metadata Fetching**: When researcher pastes a URL, backend fetches the HTML\nand extracts `<meta property=\"og:title\">`, `og:image`, `og:description`, `og:site_name`.\nSame mechanism Facebook/Twitter uses for link previews. No API needed.\n\n**A/B Testing**: Survey has `num_groups` (e.g., 2). Each post has `visible_to_groups`\n(e.g., [1]) and `group_overrides` (e.g., {\"1\": {\"display_likes\": 1000}}). When\nparticipant opens survey, they're randomly assigned to a group. Backend filters\nposts accordingly.\n\n**Tracking Data**: Gaze and click data is sent in batches (every 5-10 seconds)\nto avoid flooding the backend. Each record has a `post_id` field so researchers\ncan analyze attention per post.",
+      "order": 5
+    },
+    {
+      "id": "docs/architecture.md::6",
+      "source_file": "docs/architecture.md",
+      "heading": "Architecture > Key Design Decisions",
+      "text": "s sent in batches (every 5-10 seconds)\nto avoid flooding the backend. Each record has a `post_id` field so researchers\ncan analyze attention per post.\n\n**Participant Interactions**: Likes, comments, and clicks on posts are stored in\n`participant_interactions`, completely separate from the fake numbers set by\nthe researcher. This gives researchers two datasets: what was shown vs how\nparticipants reacted.",
+      "order": 6
+    },
+    {
+      "id": "docs/deployment.md::0",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations",
+      "text": "This document closes the operational gap called out in [`CS14_ACCEPTANCE_CHECKLIST.md`](./CS14_ACCEPTANCE_CHECKLIST.md): environment variables, migrations, HTTPS/camera constraints, CORS, the production compose/Caddy layout, and a repeatable smoke checklist. For a longer narrative, see also the VitePress page [`docs-site/docs/project/setup-deployment.md`](../docs-site/docs/project/setup-deployment.md).",
+      "order": 0
+    },
+    {
+      "id": "docs/deployment.md::1",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Source-of-truth note (git vs demo host)",
+      "text": "`docker-compose.prod.yml` and the production `Caddyfile` referenced below are deployed under `/opt/cs14` on the demo VM. They are **not** currently checked into this repository (only the dev [`docker-compose.yml`](../docker-compose.yml) lives in git). Treat the files on the server as canonical until the team vendors them into the repo; after `rsync` or manual edits on the host, consider copying them back for version control.",
+      "order": 1
+    },
+    {
+      "id": "docs/deployment.md::2",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Current deployed environment",
+      "text": "| Item | Value |\n| --- | --- |\n| Public URL | `https://cs14.kazelis.top/` |\n| Public docs URL | `https://cs14-docs.kazelis.top/` |\n| Host | Debian 12 (Bookworm), single VM (`windeza-jp`) |\n| Deploy root | `/opt/cs14` |\n| App source mount | `/opt/cs14/app` (this repo checked out on the server) |\n| Compose file | `/opt/cs14/docker-compose.prod.yml` |\n| Reverse proxy | Caddy 2, config at `/opt/cs14/Caddyfile`, reached publicly through Cloudflare Tunnel |\n| TLS | Cloudflare edge TLS for `cs14.kazelis.top` / `cs14-docs.kazelis.top`; legacy `sslip.io:8443` TLS remains available through Caddy |\n| Active ports | `80` and `8443` for legacy direct access; public custom domains use Cloudflare Tunnel because port `443` is occupied by an unrelated `sing-box` process on this VM |",
+      "order": 2
+    },
+    {
+      "id": "docs/deployment.md::3",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Current deployed environment",
+      "text": "` for legacy direct access; public custom domains use Cloudflare Tunnel because port `443` is occupied by an unrelated `sing-box` process on this VM |\n| Containers | `cs14_db_1` (postgres:16-alpine), `cs14_backend_1`, `cs14_frontend_1`, `cs14_caddy_1`, `cs14_cloudflared_1` |",
+      "order": 3
+    },
+    {
+      "id": "docs/deployment.md::4",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Current deployed environment",
+      "text": "The host port `443` is unavailable on this server. The public custom domains therefore use Cloudflare Tunnel to reach Caddy over the Docker network without exposing another host port. The legacy `sslip.io:8443` URL still works as a fallback.\n\n`docker-compose.prod.yml` differs from the root-level `docker-compose.yml` used for local development in four important ways:\n\n1. It reads all secrets from `/opt/cs14/.env` instead of hard-coded dev values.\n2. The backend runs `uvicorn` **without** `--reload`, and the frontend runs `npm run build && npm run start` (production build), not `next dev`.\n3. It adds a `caddy` service that owns ports 80 and 8443 and reverse-proxies to the internal services.\n4. It adds a `cloudflared` service that exposes `cs14.kazelis.top` and `cs14-docs.kazelis.top` through Cloudflare Tunnel without binding host port 443.",
+      "order": 4
+    },
+    {
+      "id": "docs/deployment.md::5",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Environment variables > Production `.env` (server: `/opt/cs14/.env`, mode 0600)",
+      "text": "| Variable | Purpose |\n| --- | --- |\n| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | Postgres credentials and DB name used by both `db` and `backend` services. |\n| `SECRET_KEY` | JWT signing secret — strong random value, never commit. |\n| `CORS_ORIGINS` | Comma-separated allow list of browser origins (e.g. `https://cs14.kazelis.top`). Must include every exact origin (scheme + host + port) used by participants or researchers. |\n| `NEXT_PUBLIC_API_URL` | Public base URL for the REST API **including** `/api/v1` (e.g. `https://cs14.kazelis.top/api/v1`). Baked into the Next.js build at image build time — changing it requires a rebuild of the `frontend` service. |\n| `APP_DOMAIN` | Legacy direct-access hostname used by Caddy for the `http://` -> `https://:8443` redirect and direct Caddy TLS issuance (e.g. `<REDACTED-ip>.sslip.io`). |",
+      "order": 5
+    },
+    {
+      "id": "docs/deployment.md::6",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Environment variables > Production `.env` (server: `/opt/cs14/.env`, mode 0600)",
+      "text": "direct-access hostname used by Caddy for the `http://` -> `https://:8443` redirect and direct Caddy TLS issuance (e.g. `<REDACTED-ip>.sslip.io`). |\n| `CLOUDFLARE_TUNNEL_TOKEN` | Cloudflare Tunnel token for the public custom domains. Keep it only on the server; never paste it into tickets, docs, or commits. |",
+      "order": 6
+    },
+    {
+      "id": "docs/deployment.md::7",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Environment variables > Production `.env` (server: `/opt/cs14/.env`, mode 0600)",
+      "text": "The `.env` file is kept out of version control. To rotate any secret, edit `/opt/cs14/.env` on the host then rebuild and restart the affected service.",
+      "order": 7
+    },
+    {
+      "id": "docs/deployment.md::8",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Environment variables > Local development defaults",
+      "text": "For local Compose runs, the root [`docker-compose.yml`](../docker-compose.yml) hard-codes development values (`cs14:cs14_dev_password`, `dev-secret-change-in-production`, `DEBUG=true`, `--reload`). Those defaults are not used in production.",
+      "order": 8
+    },
+    {
+      "id": "docs/deployment.md::9",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Environment variables > Optional backend variables",
+      "text": "| Variable | Purpose |\n| --- | --- |\n| `DEBUG` | Set `false` in production (default in `docker-compose.prod.yml`). Verbose errors and Swagger expose more in `true`. |\n| `ACCESS_TOKEN_EXPIRE_MINUTES` | Override JWT lifetime; default is long-lived for lab use — tighten if required by policy. |",
+      "order": 9
+    },
+    {
+      "id": "docs/deployment.md::10",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Caddy reverse proxy",
+      "text": "`/opt/cs14/Caddyfile` (excerpt):\n\n```caddy\n{\n    http_port 80\n    https_port 8443\n}\n\nhttp://{$APP_DOMAIN} {\n    redir https://{$APP_DOMAIN}:8443{uri} permanent\n}\n\n(app_routes) {\n    encode gzip\n    handle /api/v1/*     { reverse_proxy backend:8000 }\n    handle /docs*        { reverse_proxy backend:8000 }\n    handle /redoc*       { reverse_proxy backend:8000 }\n    handle /openapi.json { reverse_proxy backend:8000 }\n    handle /health       { reverse_proxy backend:8000 }\n    handle               { reverse_proxy frontend:3000 }\n}\n\nhttp://cs14.kazelis.top {\n    import app_routes\n}\n\nhttp://cs14-docs.kazelis.top {\n    encode gzip\n    root * /srv/docs\n    try_files {path} {path}/ /index.html\n    file_server\n}\n\nhttps://{$APP_DOMAIN}:8443 {\n    import app_routes\n}\n```",
+      "order": 10
+    },
+    {
+      "id": "docs/deployment.md::11",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Caddy reverse proxy",
+      "text": "encode gzip\n    root * /srv/docs\n    try_files {path} {path}/ /index.html\n    file_server\n}\n\nhttps://{$APP_DOMAIN}:8443 {\n    import app_routes\n}\n```\n\nAnything under `/api/v1/`, plus `/docs`, `/redoc`, `/openapi.json` and `/health`, is proxied to the FastAPI backend. Everything else on `cs14.kazelis.top` falls through to the Next.js frontend. `cs14-docs.kazelis.top` serves the VitePress static build from `/opt/cs14/docs-site-dist`. Public certificate management is handled by Cloudflare edge TLS for the custom domains; Caddy still manages the legacy direct `sslip.io:8443` certificate.",
+      "order": 11
+    },
+    {
+      "id": "docs/deployment.md::12",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Operate the production stack",
+      "text": "All commands run on the VM in `/opt/cs14`.\n\n```bash\n# bring everything up\ndocker compose -f docker-compose.prod.yml --env-file .env up -d\n\n# rebuild after pulling code\ndocker compose -f docker-compose.prod.yml --env-file .env build backend frontend\ndocker compose -f docker-compose.prod.yml --env-file .env up -d backend frontend\n\n# tail logs\ndocker compose -f docker-compose.prod.yml logs -f --tail=100 backend\ndocker compose -f docker-compose.prod.yml logs -f --tail=100 caddy\n\n# inspect / one-shot psql\ndocker exec -it cs14_db_1 psql -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\"\n```\n\nContainer names use the legacy `cs14_<service>_1` form (this VM still runs the v1 compose CLI binding); newer Docker Compose installs use `cs14-<service>-1` — adjust accordingly if the host gets upgraded.",
+      "order": 12
+    },
+    {
+      "id": "docs/deployment.md::13",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Database migrations",
+      "text": "Before serving traffic against a fresh database (or after pulling new migrations):\n\n```bash\ncd backend\nalembic upgrade head\n```\n\nIn production, the backend service runs `alembic upgrade head` on every container start (see `docker-compose.prod.yml`'s `backend.command`). For destructive or long-running migrations, test on a copy first.",
+      "order": 13
+    },
+    {
+      "id": "docs/deployment.md::14",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > HTTPS and webcam calibration",
+      "text": "Browsers only expose camera APIs in a **secure context**: `https:` (or `http://localhost` for development). Production participant links **must** use HTTPS on a hostname or IP with a valid/trusted certificate; otherwise calibration and gaze capture will fail or prompt inconsistently. The canonical participant host is `https://cs14.kazelis.top/`. The legacy `sslip.io:8443` route is also a secure context as long as the TLS cert validates, but it is no longer the preferred demo URL.",
+      "order": 14
+    },
+    {
+      "id": "docs/deployment.md::15",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > CORS",
+      "text": "The FastAPI app uses `CORS_ORIGINS` as an explicit allow list. After deployment, if the browser shows CORS errors, verify:\n\n1. The participant or admin URL you open matches one of the listed origins (scheme + host + optional port). The canonical custom domain origin is `https://cs14.kazelis.top`; the legacy fallback origin includes `:8443`.\n2. The frontend was built with `NEXT_PUBLIC_API_URL` pointing at the **public** API URL clients can reach.",
+      "order": 15
+    },
+    {
+      "id": "docs/deployment.md::16",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Smoke checklist (deployed or staging)",
+      "text": "Run through this after DNS, TLS, and env are in place. Replace `<host>` with your deployed host (currently `cs14.kazelis.top`).\n\n```bash\ncurl -sf https://<host>/health\n# → {\"status\":\"ok\"}\n\ncurl -sf https://<host>/openapi.json | head -c 80\n# → {\"openapi\":\"3.1.0\",\"info\":{\"title\":\"CS14-1 Survey Platform\" ...\n```\n\nOptional hardening spot-check (participant routes require `participant_token` in JSON or query; omission → **422**, wrong token → **404**). The example below omits the token on purpose; you should see HTTP **422**:\n\n```bash\ncurl -s -o /dev/null -w \"%{http_code}\\\\n\" -X POST \\\n  \"https://<host>/api/v1/surveys/responses/1/interact\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"post_id\":1,\"action_type\":\"like\",\"comment_text\":null}'\n```\n\nThen in a browser:",
+      "order": 16
+    },
+    {
+      "id": "docs/deployment.md::17",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Smoke checklist (deployed or staging)",
+      "text": "/responses/1/interact\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"post_id\":1,\"action_type\":\"like\",\"comment_text\":null}'\n```\n\nThen in a browser:\n\n1. Open the public frontend; researcher register or login works.\n2. Create a survey with at least one post and one question block; publish; open the share link in a fresh profile or incognito.\n3. Participant: consent, pick a language, complete calibration (if enabled), interact, finish.\n4. Repeat step 3 in a **second** locale (e.g. English then Chinese) to confirm the two-language path. The seed demo survey already has English + Chinese content — see [`DEMO_RUNBOOK.md`](./DEMO_RUNBOOK.md).\n5. Admin: analytics reflect the session; export CSV and JSON and confirm columns include response metadata, calibration-related fields, and tracking fields as expected.",
+      "order": 17
+    },
+    {
+      "id": "docs/deployment.md::18",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Troubleshooting",
+      "text": "| Symptom | Likely cause |\n| --- | --- |\n| Camera never prompts | Insecure context (page on `http://` or self-signed cert), permission blocked at OS/browser level, or HTTPS port unreachable. |\n| API 401 / Network error from browser | Wrong `NEXT_PUBLIC_API_URL` (must be `https://cs14.kazelis.top/api/v1` for the public demo), mixed content (HTTPS page calling HTTP API), or CORS not listing the frontend origin. |\n| `422` / `404` from participant PATCH/POST | Body or query is missing `participant_token`, or the token does not match the `response_id`. The participant UI fills this automatically — hitting APIs with raw `curl` requires copying the token from a browser session. |\n| `[object Object]` rendered as an error | Backend returned a structured 4xx/5xx body; check the browser network tab for the `detail` field and the backend logs for the upstream error. |",
+      "order": 18
+    },
+    {
+      "id": "docs/deployment.md::19",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Troubleshooting",
+      "text": "rror | Backend returned a structured 4xx/5xx body; check the browser network tab for the `detail` field and the backend logs for the upstream error. |\n| Empty CSV/JSON export | Filters too narrow, or no completed responses yet — finish at least one participant session first. |\n| Migrations fail on startup | Database user lacks DDL rights, or the `pgdata` volume points at an older major version. |\n| HTTPS reachable but `/api/v1/...` returns frontend HTML | Caddyfile path matchers were edited and `/api/v1/*` is no longer routed to `backend:8000`. Restart Caddy after fixing: `docker compose -f docker-compose.prod.yml restart caddy`. |",
+      "order": 19
+    },
+    {
+      "id": "docs/deployment.md::20",
+      "source_file": "docs/deployment.md",
+      "heading": "Deployment and production operations > Coordination demo URL",
+      "text": "The parent coordination issue references this shared HTTPS demo host for client review:\n\n- Frontend / participant entry: `https://cs14.kazelis.top/`\n- API base: `https://cs14.kazelis.top/api/v1`\n- Swagger / OpenAPI: `https://cs14.kazelis.top/docs`\n- Public docs site: `https://cs14-docs.kazelis.top/`\n\nUse this URL only with credentials and data approved for demo. Do not paste passwords, JWTs, or `.env` values into tickets or committed docs — the live researcher demo account is communicated out-of-band; see [`DEMO_RUNBOOK.md`](./DEMO_RUNBOOK.md) for the pointer.",
+      "order": 20
+    },
+    {
+      "id": "docs/researcher-user-guide.md::0",
+      "source_file": "docs/researcher-user-guide.md",
+      "heading": "Researcher User Guide",
+      "text": "This guide covers the core workflow for building and running a social-media-interface survey in the CS14 platform.",
+      "order": 0
+    },
+    {
+      "id": "docs/researcher-user-guide.md::1",
+      "source_file": "docs/researcher-user-guide.md",
+      "heading": "Researcher User Guide > 1. Create a Survey",
+      "text": "1. Sign in as a researcher.\n2. Open `Admin -> Surveys -> Create Survey`.\n3. Enter the study title and internal description.\n4. Choose the participant feed style, such as X, Facebook, Instagram, Xiaohongshu, Truth Social, or Bluesky.\n5. Set the number of participant groups for basic condition assignment.\n\nNew surveys enable click tracking, gaze tracking, and webcam calibration by default. Participants are randomly assigned to a configured group when they open the share link.",
+      "order": 1
+    },
+    {
+      "id": "docs/researcher-user-guide.md::2",
+      "source_file": "docs/researcher-user-guide.md",
+      "heading": "Researcher User Guide > 2. Add Social-Media Posts",
+      "text": "1. Open the survey workspace.\n2. Paste an article or social-media URL to create a post card.\n3. Review the fetched title, image, description, and source label.\n4. Override any display field needed for the study.\n5. Set visible engagement counts, including likes, comments, and shares.\n6. Add researcher-authored comment previews when needed.\n7. Configure which participant groups can see the post, and optionally set group-specific engagement overrides.\n\nThe participant feed will use these post settings while storing participant interactions separately from the numbers shown to participants.",
+      "order": 2
+    },
+    {
+      "id": "docs/researcher-user-guide.md::3",
+      "source_file": "docs/researcher-user-guide.md",
+      "heading": "Researcher User Guide > 3. Add Survey Questions",
+      "text": "Questions can be attached to a post or placed at the survey level. Supported question types include:\n\n- Free text\n- Single choice\n- Multiple choice\n- Likert\n- Rating\n\nUse the preview panel to check the participant-facing order before publishing.",
+      "order": 3
+    },
+    {
+      "id": "docs/researcher-user-guide.md::4",
+      "source_file": "docs/researcher-user-guide.md",
+      "heading": "Researcher User Guide > 4. Translate the Survey",
+      "text": "The platform supports English, Simplified and Traditional Chinese, Japanese, Korean, and Spanish. Each survey enables a subset of these, and participants choose among the enabled languages.\n\n1. Open the survey workspace translation panel.\n2. Select the target language.\n3. Export a JSON or CSV translation template.\n4. Fill the translated fields.\n5. Import the completed translation file.\n6. Preview the target language before sending the share link.",
+      "order": 4
+    },
+    {
+      "id": "docs/researcher-user-guide.md::5",
+      "source_file": "docs/researcher-user-guide.md",
+      "heading": "Researcher User Guide > 5. Publish and Test",
+      "text": "1. Publish the survey when the draft is ready.\n2. Copy the generated share link.\n3. Open the start page in a fresh browser session.\n4. Confirm the consent checkbox.\n5. Select the participant language.\n6. Complete webcam calibration if required.\n7. Review the feed, interact with posts, answer questions, and submit completion.\n\nIf the survey uses calibration, participants should use a desktop browser, allow camera access, and keep their face visible during the dot sequence.",
+      "order": 5
+    },
+    {
+      "id": "docs/researcher-user-guide.md::6",
+      "source_file": "docs/researcher-user-guide.md",
+      "heading": "Researcher User Guide > 6. Review Analytics and Export Data",
+      "text": "Open `Admin -> Analytics` to review:\n\n- Completion rate and average duration\n- Group-level engagement differences\n- Post-level clicks, likes, comments, and shares\n- Calibration pass rate\n- Quality flags such as very fast completions or low-interaction sessions\n\nUse the export filters to download CSV or JSON datasets by participant group, language, response status, or calibration outcome. Exported participant identifiers are anonymized; raw participant tokens are not exposed in the export.",
+      "order": 6
+    },
+    {
+      "id": "docs/tracking-api.md::0",
+      "source_file": "docs/tracking-api.md",
+      "heading": "Tracking Module API Documentation",
+      "text": "> Last updated: 2026-04-25\n\n**Owner:** Backend C",
+      "order": 0
+    },
+    {
+      "id": "docs/tracking-api.md::1",
+      "source_file": "docs/tracking-api.md",
+      "heading": "Tracking Module API Documentation > Overview",
+      "text": "The tracking module provides three groups of endpoints for capturing\nparticipant behavior during survey sessions:\n\n1. **Calibration** — webcam calibration using iris tracking\n2. **Gaze Tracking** — continuous eye-gaze position recording\n3. **Click Tracking** — mouse click event recording\n\nAll endpoints are under `/api/v1/tracking/`.\n\nParticipant-side write endpoints require both `response_id` and\n`participant_token`. The backend only accepts writes when the response exists,\nthe token matches, and the participant response is still `in_progress`.",
+      "order": 1
+    },
+    {
+      "id": "docs/tracking-api.md::2",
+      "source_file": "docs/tracking-api.md",
+      "heading": "Tracking Module API Documentation > Endpoints > Calibration",
+      "text": "| Method | Path | Description |\n|--------|------|-------------|\n| POST | `/calibration/sessions` | Create a new calibration session |\n| POST | `/calibration/sessions/{id}/points` | Record one calibration point |\n| POST | `/calibration/sessions/{id}/complete` | Complete session & get quality |",
+      "order": 2
+    },
+    {
+      "id": "docs/tracking-api.md::3",
+      "source_file": "docs/tracking-api.md",
+      "heading": "Tracking Module API Documentation > Endpoints > Gaze Tracking",
+      "text": "| Method | Path | Description |\n|--------|------|-------------|\n| POST | `/gaze` | Submit a batch of gaze data points |",
+      "order": 3
+    },
+    {
+      "id": "docs/tracking-api.md::4",
+      "source_file": "docs/tracking-api.md",
+      "heading": "Tracking Module API Documentation > Endpoints > Click Tracking",
+      "text": "| Method | Path | Description |\n|--------|------|-------------|\n| POST | `/clicks` | Submit a batch of click events |",
+      "order": 4
+    },
+    {
+      "id": "docs/tracking-api.md::5",
+      "source_file": "docs/tracking-api.md",
+      "heading": "Tracking Module API Documentation > Quality Metrics",
+      "text": "Calibration completion returns a research-grade quality object and stores the\nsame outcome on `calibration_sessions`:\n\n- `total_points`\n- `expected_points`\n- `valid_points`\n- `missing_points`\n- `avg_samples_per_point`\n- `face_detection_rate`\n- `stability_score`\n- `quality_score` from 0 to 100\n- `passed`\n- `overall_quality`: `good`, `acceptable`, or `poor`\n- `quality_reason`\n\nA valid point requires enough samples, sufficient face detection, and stable\nhead pose when `head_rotation.yaw` / `head_rotation.pitch` are supplied.\nQuality is rated as:\n\n- **good** — score >= 85 with strong face detection, point coverage, and stability\n- **acceptable** — score >= 70 and above minimum face/coverage/stability thresholds\n- **poor** — failed pass threshold or missing/unstable/low-detection data",
+      "order": 5
+    },
+    {
+      "id": "docs/tracking-api.md::6",
+      "source_file": "docs/tracking-api.md",
+      "heading": "Tracking Module API Documentation > Quality Metrics",
+      "text": "eptable** — score >= 70 and above minimum face/coverage/stability thresholds\n- **poor** — failed pass threshold or missing/unstable/low-detection data\n\nOnly numeric calibration and gaze values are stored. Webcam images, videos,\nframes, and raw media blobs must not be sent or persisted.",
+      "order": 6
+    },
+    {
+      "id": "docs/tracking-api.md::7",
+      "source_file": "docs/tracking-api.md",
+      "heading": "Tracking Module API Documentation > Validation Limits",
+      "text": "- `screen_width`, `screen_height`, `camera_width`, and `camera_height` must be positive.\n- `point_index` is 1-based and must be within the session's expected point range.\n- Calibration point samples must include 1 to 60 samples.\n- Gaze and click batches may include at most 500 records.\n- `post_id`, when supplied on gaze or click records, must belong to the same survey as the participant response.\n- `target_element`, when supplied on click records, must be a non-empty string.\n- Normalized iris coordinates must be between 0 and 1 when present.\n- If `face_detected` is true, all four iris coordinates are required. The frontend fallback is to send normalized numeric estimates rather than raw webcam media.",
+      "order": 7
+    },
+    {
+      "id": "docs/tracking-api.md::8",
+      "source_file": "docs/tracking-api.md",
+      "heading": "Tracking Module API Documentation > Request / Response Examples > Create Calibration Session",
+      "text": "**Request:**\n```json\n{\n  \"response_id\": 42,\n  \"participant_token\": \"anonymous-session-token\",\n  \"screen_width\": 1920,\n  \"screen_height\": 1080,\n  \"camera_width\": 640,\n  \"camera_height\": 480\n}\n```\n\n**Response (201):**\n```json\n{\n  \"session_id\": 1,\n  \"response_id\": 42,\n  \"status\": \"in_progress\",\n  \"expected_points\": 9,\n  \"started_at\": \"2026-04-01T10:00:00\"\n}\n```\n\nCreating a second calibration session for the same response returns `409`.",
+      "order": 8
+    },
+    {
+      "id": "docs/tracking-api.md::9",
+      "source_file": "docs/tracking-api.md",
+      "heading": "Tracking Module API Documentation > Request / Response Examples > Record Calibration Point",
+      "text": "**Request:**\n```json\n{\n  \"participant_token\": \"anonymous-session-token\",\n  \"point_index\": 1,\n  \"target_screen_x\": 960,\n  \"target_screen_y\": 540,\n  \"samples\": [\n    {\n      \"timestamp_ms\": 1714000000000,\n      \"left_iris_x\": 0.45,\n      \"left_iris_y\": 0.52,\n      \"right_iris_x\": 0.55,\n      \"right_iris_y\": 0.48,\n      \"face_detected\": true,\n      \"head_rotation\": {\n        \"yaw\": 1.2,\n        \"pitch\": -0.4,\n        \"roll\": 0.0\n      }\n    }\n  ]\n}\n```\n\n**Response (200):**\n```json\n{\n  \"session_id\": 1,\n  \"point_index\": 1,\n  \"samples_recorded\": 1,\n  \"points_completed\": 1,\n  \"points_remaining\": 8\n}\n```\n\nSubmitting the same `point_index` twice for a session returns `409`.",
+      "order": 9
+    },
+    {
+      "id": "docs/tracking-api.md::10",
+      "source_file": "docs/tracking-api.md",
+      "heading": "Tracking Module API Documentation > Request / Response Examples > Complete Calibration",
+      "text": "**Request:**\n```json\n{\n  \"participant_token\": \"anonymous-session-token\"\n}\n```\n\n**Response (200):**\n```json\n{\n  \"session_id\": 1,\n  \"status\": \"completed\",\n  \"quality\": {\n    \"total_points\": 9,\n    \"expected_points\": 9,\n    \"valid_points\": 9,\n    \"missing_points\": 0,\n    \"avg_samples_per_point\": 12.0,\n    \"face_detection_rate\": 0.98,\n    \"stability_score\": 0.96,\n    \"quality_score\": 96.8,\n    \"passed\": true,\n    \"overall_quality\": \"good\",\n    \"quality_reason\": \"Calibration passed with 100% valid point coverage, 98% face detection, and 96% stability.\"\n  },\n  \"completed_at\": \"2026-04-25T10:05:00\"\n}\n```\n\nCompleting a calibration session before at least one point has been recorded\nreturns `409`.",
+      "order": 10
+    },
+    {
+      "id": "docs/tracking-api.md::11",
+      "source_file": "docs/tracking-api.md",
+      "heading": "Tracking Module API Documentation > Request / Response Examples > Record Gaze Batch",
+      "text": "**Request:**\n```json\n{\n  \"response_id\": 42,\n  \"participant_token\": \"anonymous-session-token\",\n  \"data\": [\n    {\n      \"post_id\": 1,\n      \"timestamp_ms\": 5000,\n      \"screen_x\": 960.0,\n      \"screen_y\": 540.0,\n      \"left_iris_x\": 0.45,\n      \"left_iris_y\": 0.52\n    }\n  ]\n}\n```\n\n**Response (200):**\n```json\n{\n  \"saved\": 1\n}\n```\n\nIf a batch references a `post_id` outside the response's survey, the request\nreturns `422` and no records from that batch are saved.",
+      "order": 11
+    },
+    {
+      "id": "docs/tracking-api.md::12",
+      "source_file": "docs/tracking-api.md",
+      "heading": "Tracking Module API Documentation > Request / Response Examples > Record Click Batch",
+      "text": "**Request:**\n```json\n{\n  \"response_id\": 42,\n  \"participant_token\": \"anonymous-session-token\",\n  \"data\": [\n    {\n      \"post_id\": 1,\n      \"timestamp_ms\": 8000,\n      \"screen_x\": 500.0,\n      \"screen_y\": 300.0,\n      \"target_element\": \"headline\"\n    }\n  ]\n}\n```\n\n**Response (200):**\n```json\n{\n  \"saved\": 1\n}\n```\n\nIf a batch references a `post_id` outside the response's survey, the request\nreturns `422` and no records from that batch are saved.",
+      "order": 12
+    },
+    {
+      "id": "docs/tracking-api.md::13",
+      "source_file": "docs/tracking-api.md",
+      "heading": "Tracking Module API Documentation > Related Documents",
+      "text": "- [Tracking Data Flow](tracking-data-flow.md) — end-to-end participant session flow\n- [Design Decisions](tracking-design-decisions.md) — rationale for key design choices",
+      "order": 13
+    },
+    {
+      "id": "docs/tracking-data-flow.md::0",
+      "source_file": "docs/tracking-data-flow.md",
+      "heading": "Tracking Data Flow",
+      "text": "**Owner:** Backend C",
+      "order": 0
+    },
+    {
+      "id": "docs/tracking-data-flow.md::1",
+      "source_file": "docs/tracking-data-flow.md",
+      "heading": "Tracking Data Flow > Participant Session Flow",
+      "text": "```\n1. Participant opens survey link\n2. Frontend creates a SurveyResponse (Backend A)\n3. If calibration is enabled:\n   a. Frontend requests POST /tracking/calibration/sessions\n   b. Webcam activates, 9-point grid displayed\n   c. For each point: POST /tracking/calibration/sessions/{id}/points\n   d. After all points: POST /tracking/calibration/sessions/{id}/complete\n   e. Quality check returned to frontend\n4. Participant views posts:\n   a. Gaze data batched every 5-10 seconds → POST /tracking/gaze\n   b. Click events batched → POST /tracking/clicks\n```",
+      "order": 1
+    },
+    {
+      "id": "docs/tracking-data-flow.md::2",
+      "source_file": "docs/tracking-data-flow.md",
+      "heading": "Tracking Data Flow > Data Storage",
+      "text": "| Table | Key Columns | Indexed On |\n|-------|-------------|------------|\n| calibration_sessions | response_id, status, quality | response_id (unique) |\n| calibration_points | session_id, point_index, samples | (session_id, point_index) unique |\n| gaze_records | response_id, post_id, screen_x/y | response_id, (response_id, timestamp_ms), (post_id, timestamp_ms) |\n| click_records | response_id, post_id, screen_x/y | response_id, (response_id, timestamp_ms), (post_id, timestamp_ms) |",
+      "order": 2
+    },
+    {
+      "id": "docs/tracking-data-flow.md::3",
+      "source_file": "docs/tracking-data-flow.md",
+      "heading": "Tracking Data Flow > Batch Processing",
+      "text": "Gaze and click data arrive in batches to reduce HTTP overhead.\nEach batch is associated with a single `response_id` and `participant_token`.\nThe backend accepts the batch only when the token matches an active\n`survey_responses` row.\nIndividual records within a batch may reference different `post_id` values.\nEvery supplied `post_id` must belong to the same survey as the participant\nresponse; otherwise the whole batch is rejected and no rows are persisted.",
+      "order": 3
+    },
+    {
+      "id": "docs/tracking-data-flow.md::4",
+      "source_file": "docs/tracking-data-flow.md",
+      "heading": "Tracking Data Flow > Error Handling",
+      "text": "| Scenario | HTTP Status | Detail |\n|----------|-------------|--------|\n| Survey response not found | 404 | \"Survey response not found\" |\n| Participant token missing or invalid | 404 | \"Active participant response not found\" |\n| Calibration session already exists | 409 | \"Calibration session already exists\" |\n| Active calibration session not found | 404 | \"Active calibration session not found\" |\n| Duplicate calibration point | 409 | \"Calibration point {point_index} already exists for this session\" |\n| Completing calibration before any point is recorded | 409 | \"At least one calibration point is required before completion\" |\n| Gaze/click `post_id` does not belong to the response survey | 422 | \"post_id values do not belong to this survey: [...]\" |\n| Empty gaze/click batch | 200 | Returns `{\"saved\": 0}` |",
+      "order": 4
+    },
+    {
+      "id": "docs/tracking-data-flow.md::5",
+      "source_file": "docs/tracking-data-flow.md",
+      "heading": "Tracking Data Flow > Testing",
+      "text": "Run the tracking module tests:\n\n```bash\ncd backend\npython -m pytest tests/ -v\n```",
+      "order": 5
+    },
+    {
+      "id": "docs/tracking-design-decisions.md::0",
+      "source_file": "docs/tracking-design-decisions.md",
+      "heading": "Tracking Module Design Decisions",
+      "text": "**Owner:** Backend C",
+      "order": 0
+    },
+    {
+      "id": "docs/tracking-design-decisions.md::1",
+      "source_file": "docs/tracking-design-decisions.md",
+      "heading": "Tracking Module Design Decisions > Key Decisions > 1. Batch Processing for Gaze & Click Data",
+      "text": "**Decision:** Accept gaze and click data in batches rather than individual records.\n\n**Rationale:** Sending individual gaze points every 1-2 seconds would create\nexcessive HTTP overhead. Batching every 5-10 seconds reduces network requests\nwhile maintaining data granularity.",
+      "order": 1
+    },
+    {
+      "id": "docs/tracking-design-decisions.md::2",
+      "source_file": "docs/tracking-design-decisions.md",
+      "heading": "Tracking Module Design Decisions > Key Decisions > 2. Quality Rating Thresholds",
+      "text": "**Decision:** Three-tier quality system (good / acceptable / poor).\n\n**Thresholds:**\n- Good: face detection >= 90%, valid points >= 78% of expected\n- Acceptable: face detection >= 70%, valid points >= 56% of expected\n- Poor: below acceptable thresholds\n\n**Rationale:** These thresholds were chosen based on MediaPipe Face Mesh\nreliability data. A face detection rate below 70% indicates environmental\nissues (lighting, camera angle) that would produce unreliable gaze data.",
+      "order": 2
+    },
+    {
+      "id": "docs/tracking-design-decisions.md::3",
+      "source_file": "docs/tracking-design-decisions.md",
+      "heading": "Tracking Module Design Decisions > Key Decisions > 3. Median Iris Coordinates",
+      "text": "**Decision:** Store median (not mean) of iris coordinates per calibration point.\n\n**Rationale:** Median is more robust to outliers caused by blinks or\nmomentary tracking loss.",
+      "order": 3
+    },
+    {
+      "id": "docs/tracking-design-decisions.md::4",
+      "source_file": "docs/tracking-design-decisions.md",
+      "heading": "Tracking Module Design Decisions > Key Decisions > 4. Cascade Delete",
+      "text": "**Decision:** All tracking records cascade-delete with their parent SurveyResponse.\n\n**Rationale:** Tracking data has no meaning without the associated survey\nresponse. Cascade delete ensures clean removal.",
+      "order": 4
+    },
+    {
+      "id": "docs/tracking-design-decisions.md::5",
+      "source_file": "docs/tracking-design-decisions.md",
+      "heading": "Tracking Module Design Decisions > Key Decisions > 5. Optional Post ID in Gaze/Click Records",
+      "text": "**Decision:** `post_id` is nullable in gaze and click records.\n\n**Rationale:** Gaze data may be captured during transitions between posts\n(scrolling, loading). Click events may occur on non-post UI elements.",
+      "order": 5
+    },
+    {
+      "id": "docs-site/docs/guide/attention-confidence.md::0",
+      "source_file": "docs-site/docs/guide/attention-confidence.md",
+      "heading": "Attention Confidence",
+      "text": "The platform has two camera-related stages:\n\n1. **Calibration before the survey feed.** Participants follow a dot sequence. The system stores calibration quality, pass/fail, face detection rate, and numeric iris samples for calibration points.\n2. **Survey-time tracking during the feed.** After calibration, the participant runner samples face/eye detection and gaze estimates while the participant views posts.",
+      "order": 0
+    },
+    {
+      "id": "docs-site/docs/guide/attention-confidence.md::1",
+      "source_file": "docs-site/docs/guide/attention-confidence.md",
+      "heading": "Attention Confidence > What Is Captured During Survey Completion",
+      "text": "The browser uses MediaPipe Face Mesh locally. It periodically records numeric data:\n\n- visible post id\n- timestamp\n- estimated screen x/y\n- left and right iris positions\n- expected sample count\n- detected sample count\n- missing-face time\n- number of no-face dropout periods\n\nRaw webcam video, frames, audio, or biometric identity templates are not uploaded or stored.",
+      "order": 1
+    },
+    {
+      "id": "docs-site/docs/guide/attention-confidence.md::2",
+      "source_file": "docs-site/docs/guide/attention-confidence.md",
+      "heading": "Attention Confidence > What Happens If the Participant Leaves Frame",
+      "text": "If the face or eyes are not detected:\n\n- the floating tracking widget changes from \"Face & eyes detected\" to weak/lost states;\n- expected samples continue increasing, but detected samples do not;\n- missing-face milliseconds increase;\n- repeated misses become dropout periods;\n- the final response receives lower `attention_confidence` and `attention_quality`.\n\nThe server recomputes the quality from counts, so the client cannot inflate the score.",
+      "order": 2
+    },
+    {
+      "id": "docs-site/docs/guide/attention-confidence.md::3",
+      "source_file": "docs-site/docs/guide/attention-confidence.md",
+      "heading": "Attention Confidence > Current Scoring Rules",
+      "text": "| Signal | Meaning |\n| --- | --- |\n| `attention_coverage` | detected samples divided by expected samples. |\n| `attention_confidence` | 0 to 1 score capped by coverage, missing-face ratio, short sessions, and calibration quality. |\n| `attention_quality` | `high`, `medium`, `low`, or `unknown`. |\n| `attention_quality_reason` | Human-readable reason included in CSV/JSON export. |\n\nTypical interpretation:\n\n- **High**: at least 85% sample coverage, at most 10% missing-face time, calibration did not fail.\n- **Medium**: at least 60% sample coverage and at most 30% missing-face time.\n- **Low**: poor coverage, long missing-face time, repeated dropouts, or failed calibration.\n- **Unknown**: no survey-time tracking data was reported.",
+      "order": 3
+    },
+    {
+      "id": "docs-site/docs/guide/attention-confidence.md::4",
+      "source_file": "docs-site/docs/guide/attention-confidence.md",
+      "heading": "Attention Confidence > Demo Wording",
+      "text": "Use this wording with the client:\n\n> During the survey we collect numeric gaze/attention samples and a response-level confidence score. If the participant leaves the frame or covers their eyes, the final response is still saved but is marked lower confidence for analysis and export.",
+      "order": 4
+    },
+    {
+      "id": "docs-site/docs/guide/calibration-privacy.md::0",
+      "source_file": "docs-site/docs/guide/calibration-privacy.md",
+      "heading": "Calibration & Privacy",
+      "text": "Calibration supports gaze-quality analysis, but it depends on browser permission, lighting, camera stability, and participant behavior.",
+      "order": 0
+    },
+    {
+      "id": "docs-site/docs/guide/calibration-privacy.md::1",
+      "source_file": "docs-site/docs/guide/calibration-privacy.md",
+      "heading": "Calibration & Privacy > Calibration Flow",
+      "text": "1. Participant opens the survey start page.\n2. Participant selects language and consents.\n3. Browser requests camera permission.\n4. The app checks face presence and stability.\n5. Participant follows the dot sequence.\n6. The app stores calibration points and a quality outcome.\n7. Participant continues to the feed when the survey settings allow it.\n\nExpected outcomes should include a numeric score or quality band such as `good`, `acceptable`, or `poor`. Poor runs should either ask for retry or be flagged for researcher review.",
+      "order": 1
+    },
+    {
+      "id": "docs-site/docs/guide/calibration-privacy.md::2",
+      "source_file": "docs-site/docs/guide/calibration-privacy.md",
+      "heading": "Calibration & Privacy > Troubleshooting",
+      "text": "| Symptom | Likely cause | Researcher/participant action |\n|---|---|---|\n| Camera prompt never appears | Browser permission already blocked or insecure context. | Check site permissions; use HTTPS in production or localhost during development. |\n| Camera opens but no face detected | Face out of frame, covered camera, unsupported browser, dark lighting. | Center face, improve lighting, close other camera apps, refresh. |\n| Dot sequence fails repeatedly | Participant looks away, moves too much, or browser performance is poor. | Ask participant to keep head still and look at each dot; retry once. |\n| Calibration score is poor | Low face-detection rate or unstable gaze samples. | Mark response for review or exclude with calibration filter. |",
+      "order": 2
+    },
+    {
+      "id": "docs-site/docs/guide/calibration-privacy.md::3",
+      "source_file": "docs-site/docs/guide/calibration-privacy.md",
+      "heading": "Calibration & Privacy > Troubleshooting",
+      "text": "ce. |\n| Calibration score is poor | Low face-detection rate or unstable gaze samples. | Mark response for review or exclude with calibration filter. |\n| Mobile device behaves inconsistently | Camera/viewport constraints vary across devices. | Prefer desktop/laptop for calibrated gaze studies unless mobile has been validated. |",
+      "order": 3
+    },
+    {
+      "id": "docs-site/docs/guide/calibration-privacy.md::4",
+      "source_file": "docs-site/docs/guide/calibration-privacy.md",
+      "heading": "Calibration & Privacy > Researcher Review",
+      "text": "In analytics/export, review:\n\n- Calibration quality band.\n- Numeric score if available.\n- Face detection rate.\n- Stability score/rate.\n- Retry count or failure reason.\n- Whether poor calibration should be excluded from gaze analysis.\n\nPoor calibration does not necessarily invalidate survey answers, but it may invalidate gaze-based conclusions.",
+      "order": 4
+    },
+    {
+      "id": "docs-site/docs/guide/calibration-privacy.md::5",
+      "source_file": "docs-site/docs/guide/calibration-privacy.md",
+      "heading": "Calibration & Privacy > Data And Privacy Notes",
+      "text": "The platform should follow these rules:\n\n- Store anonymous participant response identifiers.\n- Store calibration summaries and gaze/click samples needed for analysis.\n- Do not store raw webcam video.\n- Do not export raw participant tokens.\n- Do not export researcher passwords or authentication secrets.\n- Use HTTPS for real participants so camera permission works in a secure browser context.\n- Explain camera use and tracking clearly in participant-facing consent text.\n- Limit exports to researchers who own the survey.\n\nBefore final deployment, verify privacy behavior with both CSV and JSON exports. The files should contain research data needed for analysis, not raw credentials, raw video, or private browser/session data.",
+      "order": 5
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::0",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations",
+      "text": "This page gives explicit researcher instructions for CSV/JSON export, filtering, translation import/export, and participant language selection.",
+      "order": 0
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::1",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations > Export CSV",
+      "text": "1. Sign in as a researcher.\n2. Open `Admin -> Analytics`.\n3. Select the target survey.\n4. Set filters before export:\n   - Survey.\n   - Condition/group.\n   - Participant language.\n   - Completion status.\n   - Calibration outcome.\n   - Preview/test-session inclusion if available.\n5. Choose `CSV`.\n6. Download the file.\n7. Open it in a spreadsheet tool and confirm row count, column headers, and filter values.\n\nUse CSV for statistical analysis, spreadsheet review, and sharing a flat dataset with supervisors.",
+      "order": 1
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::2",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations > Export JSON",
+      "text": "1. Sign in as a researcher.\n2. Open `Admin -> Analytics`.\n3. Select the target survey.\n4. Apply the same survey, condition, language, completion, calibration, and preview filters.\n5. Choose `JSON`.\n6. Download the file.\n7. Inspect the top-level survey metadata, response list, answers, interactions, calibration summaries, and tracking aggregates.\n\nUse JSON when nested relationships matter, such as answers grouped under responses or post-level interaction bundles.",
+      "order": 2
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::3",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations > Required Export Filters",
+      "text": "| Filter | Why it matters | Example |\n|---|---|---|\n| Survey | Prevents mixing studies. | Export only `Misinformation Pilot A`. |\n| Condition/group | Separates A/B stimulus variants. | Compare condition `1` against condition `2`. |\n| Language | Keeps translated participant flows distinct. | Export only `zh` responses. |\n| Completion status | Removes abandoned starts from final analysis. | Include completed responses only. |\n| Calibration outcome | Separates high-quality tracking from poor calibration runs. | Include `good` and `acceptable`; review `poor`. |\n| Preview inclusion | Prevents researcher tests from polluting analysis. | Exclude preview sessions by default. |\n\nExported participant identifiers should be anonymous. Raw participant tokens, passwords, camera video, and private authentication data should not appear in CSV or JSON exports.",
+      "order": 3
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::4",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations > Translation CSV Export",
+      "text": "1. Open the survey editor.\n2. Go to the translations panel.\n3. Select the target language, such as `zh-CN` or `ja`.\n4. Choose `Export CSV`.\n5. Keep stable IDs unchanged.\n6. Translate only the editable text fields.\n7. Preserve CSV headers and encoding.\n\nCSV is best for translators who work in spreadsheets.",
+      "order": 4
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::5",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations > Translation CSV Import",
+      "text": "1. Open the same survey translation panel.\n2. Select the language matching the completed CSV.\n3. Choose `Import CSV`.\n4. Upload the completed template.\n5. Review validation messages for missing IDs, invalid columns, or empty required fields.\n6. Preview the survey in that language before publishing.\n\nDo not manually invent IDs in the translation file. Export a fresh template if the survey structure changed.",
+      "order": 5
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::6",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations > Translation JSON Export",
+      "text": "1. Open the survey translation panel.\n2. Select the target language.\n3. Choose `Export JSON`.\n4. Keep object IDs and keys unchanged.\n5. Fill translated values in the expected fields.\n\nJSON is best for structured review, developer inspection, and version control.",
+      "order": 6
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::7",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations > Translation JSON Import",
+      "text": "1. Open the survey translation panel.\n2. Select the matching target language.\n3. Choose `Import JSON`.\n4. Upload the edited JSON file.\n5. Resolve schema or missing-key errors.\n6. Preview the target language.",
+      "order": 7
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::8",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations > Participant Language Selection",
+      "text": "Participants choose language on the start page before calibration and before the feed. The selected language should:\n\n- Set the participant UI language.\n- Determine translated survey title, instructions, posts, comments, and questions.\n- Be stored on the survey response.\n- Be available as an analytics/export filter.\n\nIf a translation is incomplete, researchers should either complete it before launch or clearly fall back to the default language according to the study protocol.",
+      "order": 8
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::9",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations > Research CSV columns (flat file)",
+      "text": "Each CSV row is **one participant response** (one session). Columns are fixed in this order. Several fields hold **JSON-encoded text** (arrays or objects) because the underlying data is nested; open them in Python/R with `json.loads` after reading the CSV.",
+      "order": 9
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::10",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations > Research CSV columns (flat file)",
+      "text": "| Column | Meaning |\n| --- | --- |\n| `survey_id` | Internal survey key. |\n| `response_id` | Internal response key. |\n| `participant_id` | Anonymised per-session id (hash-based; not the raw token). |\n| `assigned_group` | A/B condition (1, 2, …). |\n| `randomization_seed` | Server-side seed for stimulus ordering when used. |\n| `shown_post_order` | JSON array of post ids as shown to the participant. |\n| `is_preview` | `true` if this run was a researcher preview / test session. |\n| `language` | Participant UI language code (e.g. `en`, `zh-CN`, `ja`). |\n| `response_status` | `completed`, `in_progress`, or `flagged`, etc. |\n| `started_at` / `completed_at` | ISO timestamps. |\n| **Calibration (flat)** | See below. |\n| **Attention (flat)** | See below. |\n| `gaze_count` | Number of **gaze samples** stored for this response (aggregate count; not raw xy time series in CSV). |",
+      "order": 10
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::11",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations > Research CSV columns (flat file)",
+      "text": "ntion (flat)** | See below. |\n| `gaze_count` | Number of **gaze samples** stored for this response (aggregate count; not raw xy time series in CSV). |\n| `click_count` | Number of stored **click records** for this response. |\n| `participant_interactions` | JSON array: likes, comments, dwell, **click_x / click_y**, `action_type`, timestamps. |\n| `question_responses` | JSON array: question text, type, chosen answers / values. |\n| `displayed_posts` | JSON array: post stimuli as seen for this participant’s group (title, URLs, engagement overrides). |",
+      "order": 11
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::12",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations > Research CSV columns (flat file) > Calibration fields in CSV",
+      "text": "Flattened from the `calibration` object in JSON exports:\n\n| CSV column | Interpretation |\n| --- | --- |\n| `calibration_status` | Workflow status (e.g. completed). |\n| `calibration_quality` | Categorical quality tier (e.g. good / acceptable / poor). |\n| `calibration_quality_score` | Numeric calibration score when available. |\n| `calibration_passed` | `true`/`false` gate used by analytics filters and attention scoring. |\n\nDetailed point-level calibration geometry is **not** repeated in every CSV row; session-level metrics above are what researchers use for inclusion rules and quality reporting.",
+      "order": 12
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::13",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations > Research CSV columns (flat file) > Attention-confidence fields in CSV",
+      "text": "Flattened from the `attention` object. These summarise how consistently a face was tracked and how complete the attention window was **relative to calibration outcome**:\n\n| CSV column | Typical use |\n| --- | --- |\n| `attention_confidence` | Overall confidence score for attention/face coverage. |\n| `attention_quality` | Categorical bucket. |\n| `attention_coverage` | Share of expected window with usable face/attention signal. |\n| `attention_active_ms` | Active attention window duration. |\n| `attention_expected_samples` / `attention_detected_samples` | Sample counts for coverage math. |\n| `attention_missing_ms` | Time with missing signal. |\n| `attention_no_face_periods` | Count of gaps without a face. |\n| `attention_quality_reason` | Short machine-readable explanation for QA. |\n\nSee also [Attention confidence](./attention-confidence.md).",
+      "order": 13
+    },
+    {
+      "id": "docs-site/docs/guide/data-export.md::14",
+      "source_file": "docs-site/docs/guide/data-export.md",
+      "heading": "Data Export & Translations > JSON export shape",
+      "text": "The JSON download wraps the same responses with **structured objects** instead of stringified JSON columns:\n\n- `responses[].calibration` — object with `status`, `quality`, `quality_score`, `passed`, `face_detection_rate`, `stability_score`, `quality_reason`, `completed_at`.\n- `responses[].attention` — object with the same keys as the `attention_*` CSV columns.\n- `responses[].gaze_count` / `click_count` — aggregates matching CSV.\n- Raw time-series gaze points are **not** inlined in the bulk export; counts and interaction/click records are the researcher-facing surface area in this schema.\n\nUse JSON when you prefer nested objects without CSV string parsing; use CSV for spreadsheets and statistical packages.",
+      "order": 14
+    },
+    {
+      "id": "docs-site/docs/guide/platform-styles.md::0",
+      "source_file": "docs-site/docs/guide/platform-styles.md",
+      "heading": "Platform Style Gallery",
+      "text": "Researchers choose a participant feed style when creating or editing a survey. The style changes layout, density, media treatment, action labels, and feed chrome so the study can compare social-media interface contexts.",
+      "order": 0
+    },
+    {
+      "id": "docs-site/docs/guide/platform-styles.md::1",
+      "source_file": "docs-site/docs/guide/platform-styles.md",
+      "heading": "Platform Style Gallery > Demo Share Codes",
+      "text": "The clean demo seed creates these public preview surveys:\n\n| Share code | Style |\n| --- | --- |\n| `CS14DEMO2026` | Main client demo, X-style timeline |\n| `CS14X2026` | X timeline |\n| `CS14IG2026` | Instagram visual feed |\n| `CS14RED2026` | Xiaohongshu notes |\n| `CS14TRUTH26` | Truth Social feed |\n| `CS14BSKY2026` | Bluesky feed |\n| `CS14DOUYIN26` | Douyin / TikTok vertical feed |\n\nUse `?lang=en&preview=1&group=1` for screenshot capture without polluting normal exports. The gallery surveys intentionally skip calibration so screenshots can show the feed immediately; the main `CS14DEMO2026` survey keeps calibration enabled.",
+      "order": 1
+    },
+    {
+      "id": "docs-site/docs/guide/platform-styles.md::2",
+      "source_file": "docs-site/docs/guide/platform-styles.md",
+      "heading": "Platform Style Gallery > Screenshot Gallery",
+      "text": "The gallery uses local static demo assets, so screenshots do not depend on third-party image hotlinks during a client walkthrough.",
+      "order": 2
+    },
+    {
+      "id": "docs-site/docs/guide/platform-styles.md::3",
+      "source_file": "docs-site/docs/guide/platform-styles.md",
+      "heading": "Platform Style Gallery > Screenshot Gallery > X Timeline",
+      "text": "![X timeline participant feed](/screenshots/platform-styles/x-timeline.png)",
+      "order": 3
+    },
+    {
+      "id": "docs-site/docs/guide/platform-styles.md::4",
+      "source_file": "docs-site/docs/guide/platform-styles.md",
+      "heading": "Platform Style Gallery > Screenshot Gallery > Xiaohongshu Notes",
+      "text": "![Xiaohongshu masonry participant feed](/screenshots/platform-styles/xiaohongshu-notes.png)",
+      "order": 4
+    },
+    {
+      "id": "docs-site/docs/guide/platform-styles.md::5",
+      "source_file": "docs-site/docs/guide/platform-styles.md",
+      "heading": "Platform Style Gallery > Screenshot Gallery > Douyin / TikTok Vertical Feed",
+      "text": "![Douyin vertical participant feed](/screenshots/platform-styles/douyin-vertical.png)",
+      "order": 5
+    },
+    {
+      "id": "docs-site/docs/guide/platform-styles.md::6",
+      "source_file": "docs-site/docs/guide/platform-styles.md",
+      "heading": "Platform Style Gallery > What To Show In Demo",
+      "text": "- Switch platform style in the survey editor.\n- Open the participant preview link.\n- Explain that platform style is a controlled treatment, not a separate survey engine.\n- Show that the same post/question data can be rendered as timeline, image-first feed, masonry notes, or vertical-video style.\n- Keep calibration separate if camera setup would slow the meeting.",
+      "order": 6
+    },
+    {
+      "id": "docs-site/docs/guide/researcher-workflow.md::0",
+      "source_file": "docs-site/docs/guide/researcher-workflow.md",
+      "heading": "Researcher Workflow",
+      "text": "This guide follows the normal study lifecycle: create a survey, add posts and question blocks, preview/test, publish, run participants, calibrate, and review analytics.",
+      "order": 0
+    },
+    {
+      "id": "docs-site/docs/guide/researcher-workflow.md::1",
+      "source_file": "docs-site/docs/guide/researcher-workflow.md",
+      "heading": "Researcher Workflow > Create Or Edit A Survey",
+      "text": "1. Sign in as a researcher.\n2. Open `Admin -> Surveys`.\n3. Use `Create Survey` for a new study, or open an existing survey to edit it.\n4. Enter the researcher-facing title and description.\n5. Choose the participant feed style, such as X, Facebook, Instagram, Xiaohongshu, Truth Social, or Bluesky where available.\n6. Configure the number of participant conditions/groups.\n7. Decide whether click tracking, gaze tracking, and webcam calibration are required.\n8. Save before adding detailed blocks or posts.\n\nUse clear internal names for conditions, languages, and survey versions. That makes analytics filters and exports much easier to interpret later.",
+      "order": 1
+    },
+    {
+      "id": "docs-site/docs/guide/researcher-workflow.md::2",
+      "source_file": "docs-site/docs/guide/researcher-workflow.md",
+      "heading": "Researcher Workflow > Blocks And Question Types",
+      "text": "Build the participant flow from blocks:\n\n| Block type | Use |\n|---|---|\n| Post block | Shows a social-media-style card with title, source, image, engagement counts, comments, and optional More Information action. |\n| Question block | Collects participant answers at survey level or under a specific post. |\n| Instruction block | Gives short participant guidance between sections. |\n\nSupported question types:",
+      "order": 2
+    },
+    {
+      "id": "docs-site/docs/guide/researcher-workflow.md::3",
+      "source_file": "docs-site/docs/guide/researcher-workflow.md",
+      "heading": "Researcher Workflow > Blocks And Question Types",
+      "text": "wers at survey level or under a specific post. |\n| Instruction block | Gives short participant guidance between sections. |\n\nSupported question types:\n\n| Type | Good for | Researcher checks |\n|---|---|---|\n| Free text | Open-ended reasoning, explanation, recall. | Set required/optional state and keep prompts specific. |\n| Single choice | One answer from a controlled list. | Ensure options are mutually exclusive. |\n| Multiple choice | Multiple applicable categories. | Explain whether participants should choose all that apply. |\n| Likert | Agreement, trust, perceived credibility. | Keep scale labels consistent across questions. |\n| Rating | Numeric score or intensity. | Confirm min/max and labels match the study protocol. |",
+      "order": 3
+    },
+    {
+      "id": "docs-site/docs/guide/researcher-workflow.md::4",
+      "source_file": "docs-site/docs/guide/researcher-workflow.md",
+      "heading": "Researcher Workflow > Social-Media Post Template And Card Editor",
+      "text": "1. Add a post block.\n2. Paste a public article/page URL when metadata fetch is appropriate.\n3. Review fetched title, description, image, and source label.\n4. Override title, body text, image, source label, platform style, and visible engagement counts as needed.\n5. Add researcher-authored comment previews when the study requires controlled comments.\n6. Configure condition visibility and condition-specific overrides.\n7. Set More Information button label/visibility if participants should be able to open the original article.\n8. Preview the card in each target condition and language.\n\nDisplayed likes, comments, and shares are stimulus values. Participant interactions are recorded separately.",
+      "order": 4
+    },
+    {
+      "id": "docs-site/docs/guide/researcher-workflow.md::5",
+      "source_file": "docs-site/docs/guide/researcher-workflow.md",
+      "heading": "Researcher Workflow > Preview And Testing",
+      "text": "Preview before publish:\n\n1. Select a condition/group.\n2. Select a participant language.\n3. Review every block in participant order.\n4. Confirm post cards, images, comments, counts, and More Information behavior.\n5. Confirm required questions block completion as expected.\n6. Run a fresh-browser participant test only after the preview is correct.\n\nPreview or test sessions should be marked as preview data or excluded from final analytics/export. If the implementation does not yet guarantee this, record the test participant IDs and exclude them manually during analysis.",
+      "order": 5
+    },
+    {
+      "id": "docs-site/docs/guide/researcher-workflow.md::6",
+      "source_file": "docs-site/docs/guide/researcher-workflow.md",
+      "heading": "Researcher Workflow > Publish And Share",
+      "text": "1. Publish only after content, translations, preview, and calibration settings are reviewed.\n2. Copy the generated share link.\n3. Send one share link to participants unless the study protocol intentionally separates cohorts.\n4. Include the supported browser/device requirement when calibration is enabled.\n5. Do not edit live survey wording during active data collection unless the protocol allows version changes.",
+      "order": 6
+    },
+    {
+      "id": "docs-site/docs/guide/researcher-workflow.md::7",
+      "source_file": "docs-site/docs/guide/researcher-workflow.md",
+      "heading": "Researcher Workflow > Participant Run",
+      "text": "Participant path:\n\n1. Open the share link.\n2. Read the start page and consent statement.\n3. Select language.\n4. Allow camera access if calibration is enabled.\n5. Complete the calibration guidance and dot sequence.\n6. View the feed, interact with cards, open More Information where applicable, and answer questions.\n7. Submit completion.\n\nThe participant language selection should be stored with the response and used for the rendered survey content. Condition assignment should remain stable if the participant refreshes or resumes.",
+      "order": 7
+    },
+    {
+      "id": "docs-site/docs/guide/researcher-workflow.md::8",
+      "source_file": "docs-site/docs/guide/researcher-workflow.md",
+      "heading": "Researcher Workflow > Calibration",
+      "text": "Calibration should run before tracked feed interaction when enabled. A good run usually needs:\n\n- Desktop or laptop browser.\n- HTTPS in production, or localhost in local development.\n- Camera permission allowed.\n- Face visible, stable, and evenly lit.\n- Participant looking at each dot rather than at the keyboard or another screen.\n\nSee [Calibration & Privacy](./calibration-privacy.md) for troubleshooting.",
+      "order": 8
+    },
+    {
+      "id": "docs-site/docs/guide/researcher-workflow.md::9",
+      "source_file": "docs-site/docs/guide/researcher-workflow.md",
+      "heading": "Researcher Workflow > Analytics And Export",
+      "text": "Open `Admin -> Analytics` after participant runs. Check:\n\n- Completion rate and session duration.\n- Condition-level engagement differences.\n- Post-level likes, comments, shares, clicks, and More Information opens.\n- Calibration pass rate and quality bands.\n- Suspicious-session flags such as very fast completion, empty responses, or duplicate comments.\n\nFor explicit CSV/JSON export instructions and filters, use [Data Export & Translations](./data-export.md).",
+      "order": 9
+    },
+    {
+      "id": "docs-site/docs/guide/social-post-fetching.md::0",
+      "source_file": "docs-site/docs/guide/social-post-fetching.md",
+      "heading": "Social Post Fetching",
+      "text": "The post editor can help researchers create cards from public URLs, but it cannot bypass access controls or anti-bot restrictions. Treat fetched metadata as a starting point and manually edit cards for controlled stimuli.",
+      "order": 0
+    },
+    {
+      "id": "docs-site/docs/guide/social-post-fetching.md::1",
+      "source_file": "docs-site/docs/guide/social-post-fetching.md",
+      "heading": "Social Post Fetching > What Can Usually Be Fetched",
+      "text": "Publicly reachable pages are the best fit:\n\n| Source type | Usually available metadata |\n|---|---|\n| News articles | Title, description, publisher/source label, Open Graph image, canonical URL. |\n| Blogs | Title, description/excerpt, author/site name, hero image. |\n| Public institutional pages | Page title, summary, organization name, image if provided. |\n| Static public article pages | HTML title, meta description, Open Graph/Twitter card tags. |\n\nFetched metadata may be incomplete or inaccurate. Always review the title, image, source label, and description before using the card in a study.",
+      "order": 1
+    },
+    {
+      "id": "docs-site/docs/guide/social-post-fetching.md::2",
+      "source_file": "docs-site/docs/guide/social-post-fetching.md",
+      "heading": "Social Post Fetching > What Usually Cannot Be Fetched",
+      "text": "The fetcher should not be expected to retrieve:\n\n| Blocked source | Why |\n|---|---|\n| Login-only pages | The server has no participant/researcher browser session and should not use private cookies. |\n| Private posts or closed groups | Access is intentionally restricted. |\n| Paywalled articles | Metadata may be partial, blocked, or legally unsuitable to scrape. |\n| JS-only pages | Metadata appears only after client-side rendering, so plain server fetch may see an empty shell. |\n| Social apps that block bots | Platforms often restrict automated requests, rate-limit, or omit useful metadata. |\n| Personalised feeds | Content depends on a logged-in account, algorithm, location, or session. |\n\nDo not use the fetcher to bypass terms of service, privacy controls, paywalls, or authentication.",
+      "order": 2
+    },
+    {
+      "id": "docs-site/docs/guide/social-post-fetching.md::3",
+      "source_file": "docs-site/docs/guide/social-post-fetching.md",
+      "heading": "Social Post Fetching > Manual Fallback",
+      "text": "When fetching fails or returns weak metadata:\n\n1. Create the post card manually.\n2. Enter the study-approved title, description, source label, and display URL.\n3. Upload or choose the approved image asset if the app supports it.\n4. Set controlled engagement counts.\n5. Add comment previews manually.\n6. Set More Information behavior according to the study protocol.\n7. Preview the card in every target condition and language.\n\nManual editing is also the right path when the study requires a controlled headline or image that differs from the source page.",
+      "order": 3
+    },
+    {
+      "id": "docs-site/docs/guide/social-post-fetching.md::4",
+      "source_file": "docs-site/docs/guide/social-post-fetching.md",
+      "heading": "Social Post Fetching > Research Integrity Checks",
+      "text": "Before publish:\n\n- Confirm the displayed source label is clear and not misleading.\n- Confirm the More Information URL points to the intended public page.\n- Confirm fake engagement counts are deliberate stimulus values.\n- Confirm comments are researcher-authored or approved study materials.\n- Confirm condition-specific overrides are visible only to the intended groups.",
+      "order": 4
+    },
+    {
+      "id": "docs-site/docs/index.md::0",
+      "source_file": "docs-site/docs/index.md",
+      "heading": "index",
+      "text": "<div class=\"status-grid\">\n  <div class=\"status-tile\">\n    <strong>Live</strong>\n    <span>Public demo deployment</span>\n  </div>\n  <div class=\"status-tile\">\n    <strong>10</strong>\n    <span>PDF/MVP requirements mapped</span>\n  </div>\n  <div class=\"status-tile\">\n    <strong>3</strong>\n    <span>Participant locales documented</span>\n  </div>\n</div>\n\n<div class=\"doc-panel\">\n\nThis site is separate from the application runtime and is intended for handover, marker review, and team coordination. It documents how the platform should be operated today and what must be checked before and during client demonstrations.",
+      "order": 0
+    },
+    {
+      "id": "docs-site/docs/index.md::1",
+      "source_file": "docs-site/docs/index.md",
+      "heading": "index",
+      "text": "eview, and team coordination. It documents how the platform should be operated today and what must be checked before and during client demonstrations.\n\nThe public demo is live at [cs14.kazelis.top](https://cs14.kazelis.top/), with this documentation published separately at [cs14-docs.kazelis.top](https://cs14-docs.kazelis.top/). Both routes are served through Cloudflare Tunnel so the application can use standard HTTPS while the VM's port 443 remains reserved for another service.\n\nThe step-by-step **demo runbook** (share-code matrix, disposable researcher policy, scripted 20 -minute walk-through, verifier shell usage) stays in-repo as markdown: [`docs/DEMO_RUNBOOK.md` on GitHub](https://github.com/kazelise/usyd-cs14-1/blob/dev/docs/DEMO_RUNBOOK.md).",
+      "order": 1
+    },
+    {
+      "id": "docs-site/docs/index.md::2",
+      "source_file": "docs-site/docs/index.md",
+      "heading": "index",
+      "text": "ier shell usage) stays in-repo as markdown: [`docs/DEMO_RUNBOOK.md` on GitHub](https://github.com/kazelise/usyd-cs14-1/blob/dev/docs/DEMO_RUNBOOK.md).\n\n<div class=\"tagline-row\">\n  <span>Survey builder</span>\n  <span>Platform style gallery</span>\n  <span>Translations</span>\n  <span>Calibration</span>\n  <span>Export</span>\n</div>\n\n</div>",
+      "order": 2
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::0",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix",
+      "text": "This matrix maps every listed PDF/MVP item from the CS14 acceptance checklist to current documentation coverage, expected product behavior, and final acceptance evidence.",
+      "order": 0
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::1",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix",
+      "text": "| # | PDF/MVP item | Documentation coverage | Expected product behavior | Acceptance evidence |\n|---:|---|---|---|---|\n| 1 | Working deployed MVP | [Local Setup & Live Deployment](./setup-deployment.md) covers local smoke testing and the live Japan VM deployment. | Docker Compose runs PostgreSQL, FastAPI, Next.js, Caddy, and Cloudflare Tunnel; the public app is available at `https://cs14.kazelis.top/`. | Public `/health`, Swagger, frontend, seeded participant link, and docs site smoke checks pass. |",
+      "order": 1
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::2",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix",
+      "text": "ic app is available at `https://cs14.kazelis.top/`. | Public `/health`, Swagger, frontend, seeded participant link, and docs site smoke checks pass. |\n| 2 | Admin survey builder with create/edit surveys, blocks, and question types | [Researcher Workflow](../guide/researcher-workflow.md) documents create/edit, blocks, and question types. | Researcher can create surveys, add/edit/reorder content blocks, and configure free text, single choice, multiple choice, Likert, and rating questions. | Builder UI smoke test, persisted block changes, backend route tests, frontend build. |",
+      "order": 2
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::3",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix",
+      "text": "single choice, multiple choice, Likert, and rating questions. | Builder UI smoke test, persisted block changes, backend route tests, frontend build. |\n| 3 | Social-media post template editor with feed posts, cards, counts, comments, source labels, and More Information buttons | [Researcher Workflow](../guide/researcher-workflow.md) and [Social Post Fetching](../guide/social-post-fetching.md) document the card editor and fetch/manual fallback rules. | Researcher can fetch metadata when possible, override all display fields, set engagement counts, write comment previews, and track More Information clicks. | Post card preview per condition/language, participant feed rendering, interaction tracking in export. |",
+      "order": 3
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::4",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix",
+      "text": "previews, and track More Information clicks. | Post card preview per condition/language, participant feed rendering, interaction tracking in export. |\n| 4 | Preview/testing workflow | [Researcher Workflow](../guide/researcher-workflow.md) defines preview before publish and test-session discipline. | Researcher can preview selected condition/language without polluting final analytics, then perform a participant smoke run. | Preview session excluded or marked, condition/language rendering verified, share link copied only after review. |",
+      "order": 4
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::5",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix",
+      "text": "n perform a participant smoke run. | Preview session excluded or marked, condition/language rendering verified, share link copied only after review. |\n| 5 | At least 2 languages end-to-end, translation CSV/JSON import/export, and participant language selection | [Data Export & Translations](../guide/data-export.md) gives explicit import/export and participant language-selection steps. | Admin exports translation templates, imports completed translations, and participant language choice drives rendered survey content. | CSV/JSON roundtrip, selected language stored on response, English/Chinese (plus Japanese, Korean, Spanish) checked where available. |",
+      "order": 5
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::6",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix",
+      "text": "urvey content. | CSV/JSON roundtrip, selected language stored on response, English/Chinese (plus Japanese, Korean, Spanish) checked where available. |\n| 6 | Participant runner with clean UI, condition assignment, and randomisation | [Researcher Workflow](../guide/researcher-workflow.md) documents publish/share, participant run, and condition preview. | Participant opens one share link, chooses language, receives assigned condition, completes required blocks, and submits once. | Participant run smoke test, persisted response, condition assignment visible in analytics/export. |",
+      "order": 6
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::7",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix",
+      "text": "on, completes required blocks, and submits once. | Participant run smoke test, persisted response, condition assignment visible in analytics/export. |\n| 7 | Camera calibration module with permission flow, guidance, face detection, dot sequence, score, and stored outcomes | [Calibration & Privacy](../guide/calibration-privacy.md) covers flow, troubleshooting, pass/fail interpretation, and privacy limits. | Participant grants camera permission, completes dot sequence, receives pass/acceptable/poor outcome, and calibration summary is stored without raw video. | Calibration session and points stored, numeric score/outcome exported, retry behavior checked. |",
+      "order": 7
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::8",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix",
+      "text": "nd calibration summary is stored without raw video. | Calibration session and points stored, numeric score/outcome exported, retry behavior checked. |\n| 8 | Database schema for surveys, translations, anonymous participants, responses, calibration logs | [Data Export & Translations](../guide/data-export.md) and [Calibration & Privacy](../guide/calibration-privacy.md) document the researcher-visible data contract. | Data model supports surveys, posts, questions, translations, anonymous responses, interactions, calibration sessions, gaze/click summaries. | Alembic migrations, schema tests, privacy check that raw participant tokens/video are not exported. |",
+      "order": 8
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::9",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix",
+      "text": "s, calibration sessions, gaze/click summaries. | Alembic migrations, schema tests, privacy check that raw participant tokens/video are not exported. |\n| 9 | CSV/JSON export with filters by survey, condition, and language | [Data Export & Translations](../guide/data-export.md) gives explicit CSV/JSON export and filter instructions. | Researcher exports owned survey data as CSV or JSON, filtered by survey, condition, language, completion status, calibration outcome, and preview inclusion. | Export files open cleanly, filters change row set, stable column/JSON schema, privacy exclusions verified. |",
+      "order": 9
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::10",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix",
+      "text": "bration outcome, and preview inclusion. | Export files open cleanly, filters change row set, stable column/JSON schema, privacy exclusions verified. |\n| 10 | Local and deployment setup docs plus researcher user guide | This VitePress site provides separate setup, deployment, researcher, export, fetching, calibration, and privacy pages. | A new team member can run locally, follow the researcher flow, understand live demo operations, and avoid unsupported fetch/export assumptions. | `npm run build` for docs, public docs at `https://cs14-docs.kazelis.top/`, and app smoke checklist before client demonstration. |",
+      "order": 10
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::11",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix > Current Readiness Notes",
+      "text": "- The docs site is intentionally separate from backend/frontend runtime code.\n- Deployment instructions now describe the live Japan VM plus Cloudflare Tunnel setup.\n- Product gaps should continue to be tracked in the main acceptance checklist and implementation issues.",
+      "order": 11
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::12",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix > Live URLs",
+      "text": "- Participant/researcher app: `https://cs14.kazelis.top/`\n- Public docs site: `https://cs14-docs.kazelis.top/`\n- Published participant smoke link: `https://cs14.kazelis.top/survey/CS14DEMO2026?lang=en`",
+      "order": 12
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::13",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix > Client Feedback Status",
+      "text": "| Feedback item | Current status | Handoff note |\n|---|---|---|\n| Platform UI dropdown for X, Facebook, Truth Social, Instagram, Bluesky | Partial | Current code carries platform UI style through survey create/edit and the participant renderer has distinct feed skins. Final review should verify one published survey per style because older branches collapsed Truth Social and Bluesky back to X-style. |\n| External post/headline/image/More Information opens in a new tab | Done | Participant click handling opens `_blank` synchronously before interaction logging and keeps the survey tab on the same route. Browser QA should verify headline, image, and More Information each create one intentional `click` interaction. |",
+      "order": 13
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::14",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix > Client Feedback Status",
+      "text": "ps the survey tab on the same route. Browser QA should verify headline, image, and More Information each create one intentional `click` interaction. |\n| Survey-time gaze/attention data | Partial | Calibration sessions and post-calibration gaze/click capture are implemented, including participant-token hardening and attention summary plumbing. Public browser evidence still needs a real camera or controlled fake-camera pass to confirm the live survey-time stream end to end. |\n| Camera calibration flow | Done with device-risk | Webcam permission, face stability, dot sequence, score, and stored outcomes are implemented. Demo readiness still depends on HTTPS camera permission and room lighting on the presenter device. |",
+      "order": 14
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::15",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix > Client Feedback Status",
+      "text": "ence, score, and stored outcomes are implemented. Demo readiness still depends on HTTPS camera permission and room lighting on the presenter device. |\n| CSV/JSON export with useful filters | Partial | Backend/export paths expose CSV and JSON filters for group/language/status/calibration/preview. Final acceptance should verify that the visible analytics/export UI changes row sets and labels export-only filters honestly. |\n| Live deployment and docs links | Done | App and docs are live at the URLs above; do not revert wording to \"deployment postponed\". |",
+      "order": 15
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::16",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix > Transcript Handoff Notes",
+      "text": "- 8:17-13:52: client asked which platform UI is shown and requested a researcher dropdown for Facebook/X/Truth Social/Instagram/Bluesky-style presentation.\n- 14:28-15:26: client said post clicks, including More Information, must open a separate tab so the participant does not lose the survey page.\n- 16:04-17:33: client asked to see CSV/export data.\n- 17:33-18:24: client asked where survey-time eye-tracking data is, not only calibration output.\n- 18:24 onward: client asked to put these comments into the status check form and send the platform/Cloudflare links.",
+      "order": 16
+    },
+    {
+      "id": "docs-site/docs/project/acceptance-matrix.md::17",
+      "source_file": "docs-site/docs/project/acceptance-matrix.md",
+      "heading": "PDF/MVP Coverage Matrix > External Click QA Checklist",
+      "text": "- Start from the published participant smoke link above. If calibration blocks automation, complete calibration manually or use a local app run with a post that includes a hero image.\n- Click the post headline, hero image, and More Information button separately.\n- Expected result for each click: a separate tab opens to the original URL, the survey tab remains on `/survey/...`, and exactly one semantic `click` interaction is sent with the current `participant_token`.\n- Expected raw click tracking: headline clicks are labelled `headline`, image clicks are labelled `image`, More Information clicks are labelled `more_info`, and action buttons keep their own labels.",
+      "order": 17
+    },
+    {
+      "id": "docs-site/docs/project/api-reference.md::0",
+      "source_file": "docs-site/docs/project/api-reference.md",
+      "heading": "API Reference",
+      "text": "All routes are under `/api/v1`. Researcher endpoints require a bearer token. Public participant endpoints use a response-scoped `participant_token` after `start`.",
+      "order": 0
+    },
+    {
+      "id": "docs-site/docs/project/api-reference.md::1",
+      "source_file": "docs-site/docs/project/api-reference.md",
+      "heading": "API Reference > Auth",
+      "text": "| Method | Endpoint | Purpose |\n| --- | --- | --- |\n| `POST` | `/auth/register` | Create a researcher account. |\n| `POST` | `/auth/login` | Return a JWT for admin operations. |\n| `GET` | `/auth/me` | Read current researcher profile. |\n| `PATCH` | `/auth/me` | Update researcher display name. |",
+      "order": 1
+    },
+    {
+      "id": "docs-site/docs/project/api-reference.md::2",
+      "source_file": "docs-site/docs/project/api-reference.md",
+      "heading": "API Reference > Survey Management",
+      "text": "| Method | Endpoint | Purpose |\n| --- | --- | --- |\n| `POST` | `/surveys` | Create a survey with platform style, group count, tracking, calibration, and language settings. |\n| `GET` | `/surveys` | List researcher-owned surveys. |\n| `GET` | `/surveys/{survey_id}` | Read one survey and its configuration. |\n| `PATCH` | `/surveys/{survey_id}` | Update title, settings, status-adjacent fields, style, groups, and tracking flags. |\n| `DELETE` | `/surveys/{survey_id}` | Delete a survey and dependent data. |\n| `POST` | `/surveys/{survey_id}/publish` | Publish a draft and expose its share code. |\n| `GET` | `/surveys/{survey_id}/preview` | Return the participant payload for a selected group/language without creating final export data. |",
+      "order": 2
+    },
+    {
+      "id": "docs-site/docs/project/api-reference.md::3",
+      "source_file": "docs-site/docs/project/api-reference.md",
+      "heading": "API Reference > Posts, Comments, Questions",
+      "text": "| Method | Endpoint | Purpose |\n| --- | --- | --- |\n| `POST` | `/surveys/{survey_id}/posts` | Create a post card from a URL and Open Graph metadata. |\n| `GET` | `/surveys/{survey_id}/posts` | List post cards for editing. |\n| `PATCH` | `/surveys/{survey_id}/posts/{post_id}` | Update display overrides, engagement numbers, group visibility, and labels. |\n| `DELETE` | `/surveys/{survey_id}/posts/{post_id}` | Remove a post card. |\n| `POST` | `/surveys/{survey_id}/posts/{post_id}/comments` | Add a researcher-authored fake comment. |\n| `POST` | `/surveys/{survey_id}/posts/{post_id}/questions` | Add a post-attached question. |\n| `GET` | `/surveys/{survey_id}/posts/{post_id}/questions` | List post-attached questions. |\n| `PATCH` | `/surveys/{survey_id}/posts/{post_id}/questions/{question_id}` | Update question text/type/config/order. |",
+      "order": 3
+    },
+    {
+      "id": "docs-site/docs/project/api-reference.md::4",
+      "source_file": "docs-site/docs/project/api-reference.md",
+      "heading": "API Reference > Posts, Comments, Questions",
+      "text": "List post-attached questions. |\n| `PATCH` | `/surveys/{survey_id}/posts/{post_id}/questions/{question_id}` | Update question text/type/config/order. |\n| `DELETE` | `/surveys/{survey_id}/posts/{post_id}/questions/{question_id}` | Delete a post-attached question. |\n| `POST` | `/surveys/{survey_id}/questions` | Add a survey-level question. |\n| `GET` | `/surveys/{survey_id}/questions` | List survey-level questions. |\n| `PATCH` | `/surveys/{survey_id}/questions/{question_id}` | Update a survey-level question. |\n| `DELETE` | `/surveys/{survey_id}/questions/{question_id}` | Delete a survey-level question. |",
+      "order": 4
+    },
+    {
+      "id": "docs-site/docs/project/api-reference.md::5",
+      "source_file": "docs-site/docs/project/api-reference.md",
+      "heading": "API Reference > Translations",
+      "text": "| Method | Endpoint | Purpose |\n| --- | --- | --- |\n| `GET` | `/surveys/{survey_id}/translations/export` | Export translation templates or completed translations as JSON/CSV. |\n| `POST` | `/surveys/{survey_id}/translations/import` | Import JSON/CSV translations for survey, post, and question copy. |",
+      "order": 5
+    },
+    {
+      "id": "docs-site/docs/project/api-reference.md::6",
+      "source_file": "docs-site/docs/project/api-reference.md",
+      "heading": "API Reference > Participant Flow",
+      "text": "| Method | Endpoint | Purpose |\n| --- | --- | --- |\n| `GET` | `/surveys/public/{share_code}` | Read public landing metadata for a published survey. |\n| `POST` | `/surveys/{share_code}/start` | Create or resume an anonymous participant response, assign group, and return posts/questions/tracking settings. |\n| `GET` | `/surveys/responses/{response_id}/state` | Resume like/comment state with a valid participant token. |\n| `POST` | `/surveys/responses/{response_id}/interact` | Record participant like/comment/share-style events. |\n| `POST` | `/surveys/responses/{response_id}/likes/toggle` | Toggle current like state and record the event. |\n| `POST` | `/surveys/responses/{response_id}/comments` | Create a participant-authored comment. |\n| `PATCH` | `/surveys/responses/{response_id}/comments/{comment_id}` | Edit a participant-authored comment. |",
+      "order": 6
+    },
+    {
+      "id": "docs-site/docs/project/api-reference.md::7",
+      "source_file": "docs-site/docs/project/api-reference.md",
+      "heading": "API Reference > Participant Flow",
+      "text": "Create a participant-authored comment. |\n| `PATCH` | `/surveys/responses/{response_id}/comments/{comment_id}` | Edit a participant-authored comment. |\n| `DELETE` | `/surveys/responses/{response_id}/comments/{comment_id}` | Delete a participant-authored comment. |\n| `POST` | `/surveys/responses/{response_id}/attention-summary` | Store survey-time face/eye coverage counts and server-computed confidence before completion. |\n| `POST` | `/surveys/responses/{response_id}/complete` | Complete the response and persist final attention quality if supplied. |",
+      "order": 7
+    },
+    {
+      "id": "docs-site/docs/project/api-reference.md::8",
+      "source_file": "docs-site/docs/project/api-reference.md",
+      "heading": "API Reference > Tracking",
+      "text": "| Method | Endpoint | Purpose |\n| --- | --- | --- |\n| `POST` | `/tracking/calibration/sessions` | Start a calibration session for one response. |\n| `POST` | `/tracking/calibration/sessions/{session_id}/points` | Store numeric samples for one calibration point. |\n| `POST` | `/tracking/calibration/sessions/{session_id}/complete` | Compute pass/fail, quality score, and calibration summary. |\n| `POST` | `/tracking/gaze` | Store batched survey-time gaze samples. |\n| `POST` | `/tracking/clicks` | Store batched survey-time click samples. |",
+      "order": 8
+    },
+    {
+      "id": "docs-site/docs/project/api-reference.md::9",
+      "source_file": "docs-site/docs/project/api-reference.md",
+      "heading": "API Reference > Analytics and Export",
+      "text": "| Method | Endpoint | Purpose |\n| --- | --- | --- |\n| `GET` | `/surveys/{survey_id}/analytics-summary` | Return dashboard metrics, group comparison, engagement totals, and attention/export readiness. |\n| `GET` | `/surveys/{survey_id}/participant-comments` | Return participant comments for qualitative review. |\n| `GET` | `/surveys/{survey_id}/engagement-stats` | Return post/group engagement stats. |\n| `GET` | `/surveys/{survey_id}/export?format=csv|json` | Export responses, answers, interactions, calibration, gaze, clicks, and confidence fields. |",
+      "order": 9
+    },
+    {
+      "id": "docs-site/docs/project/architecture.md::0",
+      "source_file": "docs-site/docs/project/architecture.md",
+      "heading": "System Architecture",
+      "text": "CS14 is a full-stack research platform: researchers design social-media-style survey studies in the admin workspace, participants complete the study through a public share link, and the backend stores survey content, responses, calibration metadata, gaze samples, click records, and exports.",
+      "order": 0
+    },
+    {
+      "id": "docs-site/docs/project/architecture.md::1",
+      "source_file": "docs-site/docs/project/architecture.md",
+      "heading": "System Architecture > Runtime View",
+      "text": "```mermaid\nflowchart LR\n  researcher[\"Researcher browser\\n/admin/*\"] --> frontend[\"Next.js frontend\\nReact + Tailwind\"]\n  participant[\"Participant browser\\n/survey/:shareCode\"] --> frontend\n  frontend --> api[\"FastAPI backend\\n/api/v1\"]\n  api --> db[\"PostgreSQL\"]\n  api --> og[\"Open Graph fetcher\\nURL metadata\"]\n  participant --> camera[\"Local webcam\\nMediaPipe Face Mesh\"]\n  camera --> participant\n  participant --> api\n  docs[\"VitePress docs\\ncs14-docs.kazelis.top\"] -. handover .-> researcher\n```",
+      "order": 1
+    },
+    {
+      "id": "docs-site/docs/project/architecture.md::2",
+      "source_file": "docs-site/docs/project/architecture.md",
+      "heading": "System Architecture > Main Modules",
+      "text": "| Module | Responsibility | Important files |\n| --- | --- | --- |\n| Admin workspace | Create/edit/publish surveys, configure platform style, groups, posts, translations, preview, analytics, export. | `frontend/app/admin/*` |\n| Participant runner | Consent, language selection, calibration, social feed rendering, click/gaze collection, completion. | `frontend/app/survey/[shareCode]/*` |\n| Backend API | Auth, survey CRUD, public participant flow, translations, analytics, export, tracking ingestion. | `backend/app/routers/*` |\n| Data model | Researcher-owned surveys, posts, questions, translations, anonymous responses, calibration and tracking records. | `backend/app/models/*` |\n| Docs/runtime ops | Public documentation, demo runbook, deployment checklist, acceptance matrix. | `docs-site/docs/*`, `docs/*` |",
+      "order": 2
+    },
+    {
+      "id": "docs-site/docs/project/architecture.md::3",
+      "source_file": "docs-site/docs/project/architecture.md",
+      "heading": "System Architecture > Participant Data Flow",
+      "text": "```mermaid\nsequenceDiagram\n  participant P as Participant\n  participant UI as Survey Runner\n  participant API as FastAPI\n  participant DB as PostgreSQL\n\nP->>UI: Open public share link\n  UI->>API: POST /surveys/{share_code}/start\n  API->>DB: Create anonymous response + group assignment\n  API-->>UI: Posts, questions, token, tracking settings\n  UI->>P: Consent + calibration flow\n  UI->>API: POST /tracking/calibration/*\n  UI->>P: Platform-specific feed\n  loop During survey\n    UI->>API: POST /tracking/gaze\n    UI->>API: POST /tracking/clicks\n    UI->>API: POST /surveys/responses/{id}/interact\n  end\n  UI->>API: POST /surveys/responses/{id}/attention-summary\n  UI->>API: POST /surveys/responses/{id}/complete\n  API->>DB: Store confidence, completion, responses\n```",
+      "order": 3
+    },
+    {
+      "id": "docs-site/docs/project/architecture.md::4",
+      "source_file": "docs-site/docs/project/architecture.md",
+      "heading": "System Architecture > Design Choices",
+      "text": "- **Public participant links stay anonymous.** The participant token binds updates to one response without requiring login.\n- **Researcher operations require auth and ownership checks.** Analytics, exports, translations, and survey editing are not public.\n- **Platform style is a research variable.** `platform_ui_style` controls the participant visual treatment while `platform_style` remains a legacy compatibility field.\n- **Camera data is minimized.** The browser uses webcam frames locally for MediaPipe detection, but the backend stores numeric calibration/gaze records and confidence summaries, not raw video.\n- **Exports are research-first.** CSV/JSON include response metadata, group/language filters, calibration status, attention confidence, interactions, gaze, and click evidence.",
+      "order": 4
+    },
+    {
+      "id": "docs-site/docs/project/database.md::0",
+      "source_file": "docs-site/docs/project/database.md",
+      "heading": "Database Design",
+      "text": "PostgreSQL is the source of truth. The schema separates researcher-authored study content from anonymous participant data, and separates displayed fake engagement numbers from participant interactions.",
+      "order": 0
+    },
+    {
+      "id": "docs-site/docs/project/database.md::1",
+      "source_file": "docs-site/docs/project/database.md",
+      "heading": "Database Design > Entity Relationship Overview",
+      "text": "```mermaid\nerDiagram\n  researchers ||--o{ surveys : owns\n  surveys ||--o{ survey_posts : contains\n  survey_posts ||--o{ post_comments : shows\n  surveys ||--o{ questions : has\n  survey_posts ||--o{ questions : may_have\n  surveys ||--o{ survey_translations : localizes\n  survey_posts ||--o{ post_translations : localizes\n  questions ||--o{ question_translations : localizes\n  surveys ||--o{ survey_responses : receives\n  survey_responses ||--o{ question_responses : answers\n  survey_responses ||--o{ participant_interactions : records\n  survey_responses ||--o{ participant_likes : state\n  survey_responses ||--o{ participant_comments : writes\n  survey_responses ||--|| calibration_sessions : calibrates\n  calibration_sessions ||--o{ calibration_points : contains\n  survey_responses ||--o{ gaze_records : captures\n  survey_responses ||--o{ click_records : captures\n```",
+      "order": 1
+    },
+    {
+      "id": "docs-site/docs/project/database.md::2",
+      "source_file": "docs-site/docs/project/database.md",
+      "heading": "Database Design > Core Tables",
+      "text": "| Table | Purpose | Key fields |\n| --- | --- | --- |\n| `researchers` | Admin users. | `email`, `password_hash`, `name` |\n| `surveys` | Study definition and runtime settings. | `status`, `share_code`, `platform_ui_style`, `default_language`, `supported_languages`, `num_groups`, `gaze_tracking_enabled`, `calibration_enabled` |\n| `survey_posts` | Researcher-authored social post cards. | `original_url`, fetched OG fields, display overrides, `source_label`, fake likes/comments/shares, group visibility/overrides |\n| `post_comments` | Fake comments shown inside the post stimulus. | `author_name`, `text`, `order` |\n| `questions` | Survey-level or post-attached questions. | `question_type`, `text`, `config`, `order` |\n| `survey_translations`, `post_translations`, `question_translations` | Localized copy for multilingual studies. | `language_code`, `translated_fields` |",
+      "order": 2
+    },
+    {
+      "id": "docs-site/docs/project/database.md::3",
+      "source_file": "docs-site/docs/project/database.md",
+      "heading": "Database Design > Participant Tables",
+      "text": "| Table | Purpose | Key fields |\n| --- | --- | --- |\n| `survey_responses` | One anonymous participant session. | `participant_token`, `assigned_group`, `language`, `status`, `started_at`, `completed_at`, `attention_confidence`, `attention_quality` |\n| `question_responses` | Answers to configured questions. | `answer_text`, `answer_value`, `answer_choices` |\n| `participant_interactions` | Event stream for like/comment/share/click-style actions. | `action_type`, `post_id`, optional `comment_text`, optional coordinates |\n| `participant_likes` | Current like state for toggles. | unique `(response_id, post_id)` |\n| `participant_comments` | Participant-authored comments. | `text`, `author_name`, timestamps |\n| `calibration_sessions` | Result of the pre-survey webcam calibration. | `passed`, `quality`, `quality_score`, `face_detection_rate`, `validation_error_px` |",
+      "order": 3
+    },
+    {
+      "id": "docs-site/docs/project/database.md::4",
+      "source_file": "docs-site/docs/project/database.md",
+      "heading": "Database Design > Participant Tables",
+      "text": "ration_sessions` | Result of the pre-survey webcam calibration. | `passed`, `quality`, `quality_score`, `face_detection_rate`, `validation_error_px` |\n| `calibration_points` | Samples for each calibration target point. | `target_screen_x`, `target_screen_y`, `samples`, medians |\n| `gaze_records` | Survey-time gaze samples. | `post_id`, `timestamp_ms`, `screen_x`, `screen_y`, iris coordinates |\n| `click_records` | Survey-time click samples. | `post_id`, `timestamp_ms`, `screen_x`, `screen_y`, `target_element` |",
+      "order": 4
+    },
+    {
+      "id": "docs-site/docs/project/database.md::5",
+      "source_file": "docs-site/docs/project/database.md",
+      "heading": "Database Design > Why This Shape",
+      "text": "- Survey content is editable and researcher-owned; response data is append-style and anonymous.\n- The fake engagement numbers shown to participants live on `survey_posts`; actual participant behavior lives in participant tables.\n- Translations are JSON field maps so the admin can export/import CSV/JSON without a new column for every copy field.\n- Attention confidence is stored on `survey_responses` so CSV/JSON exports can filter or down-weight lower-quality responses without recomputing every gaze sample.",
+      "order": 5
+    },
+    {
+      "id": "docs-site/docs/project/frontend-design.md::0",
+      "source_file": "docs-site/docs/project/frontend-design.md",
+      "heading": "Frontend Design",
+      "text": "The frontend is split into two products that share the same backend: a researcher admin workspace and a participant survey runner.",
+      "order": 0
+    },
+    {
+      "id": "docs-site/docs/project/frontend-design.md::1",
+      "source_file": "docs-site/docs/project/frontend-design.md",
+      "heading": "Frontend Design > Admin Workspace",
+      "text": "The admin UI is intentionally operational rather than decorative. Researchers need to create a study quickly, verify the participant experience, then export data.\n\nDesign principles:\n\n- Put **Surveys** and **Analytics** in the primary navigation; remove unused areas such as Templates.\n- Treat status filters as a real workflow: draft, published, closed.\n- Keep export discoverable on Analytics because client review focuses on CSV/JSON evidence.\n- Use stable forms and explicit controls for platform style, groups, languages, calibration, and tracking.\n- Keep wording consistent around \"survey workspace\" and \"research studies\" rather than personal dashboard language.",
+      "order": 1
+    },
+    {
+      "id": "docs-site/docs/project/frontend-design.md::2",
+      "source_file": "docs-site/docs/project/frontend-design.md",
+      "heading": "Frontend Design > Participant Runner",
+      "text": "The participant runner is where the social-media interface study happens. The same post/question data can render with different platform treatments through `platform_ui_style`.\n\nDesign principles:\n\n- The runner must feel like the chosen platform family, not just change color.\n- The survey controls must remain clear: language, progress, group, completion, and tracking status cannot disappear.\n- The \"More Information\" link opens a new tab so participants do not lose the survey session.\n- A floating attention widget shows whether face/eyes are detected and the current sample coverage.\n- Mobile and desktop layouts must preserve readable posts and controls.",
+      "order": 2
+    },
+    {
+      "id": "docs-site/docs/project/frontend-design.md::3",
+      "source_file": "docs-site/docs/project/frontend-design.md",
+      "heading": "Frontend Design > Platform Style Treatments",
+      "text": "| Style | Structural treatment |\n| --- | --- |\n| X / Twitter | Single timeline column with compact text-first cards and repost-style actions. |\n| Facebook | Wider feed with blue social-card conventions and familiar engagement actions. |\n| Instagram | Centered, image-forward cards with profile/story cues and square/portrait media. |\n| Xiaohongshu | Masonry-style note grid with image-first cards and compact action chips. |\n| Truth Social | Navy/red feed chrome with strong tab treatment and sharper card geometry. |\n| Bluesky | Minimal two-tab feed chrome, soft sky palette, and rounded conversational cards. |\n| Douyin / TikTok | Dark vertical-video inspired feed with immersive tall media and short-form action labels. |",
+      "order": 3
+    },
+    {
+      "id": "docs-site/docs/project/frontend-design.md::4",
+      "source_file": "docs-site/docs/project/frontend-design.md",
+      "heading": "Frontend Design > Why `platform_ui_style` Exists",
+      "text": "`platform_style` is the older compatibility field used by the backend and legacy UI choices. `platform_ui_style` is the actual participant visual treatment, so newer styles such as Truth Social, Bluesky, and Douyin/TikTok can map back to compatible legacy values while still rendering a distinct participant experience.",
+      "order": 4
+    },
+    {
+      "id": "docs-site/docs/project/setup-deployment.md::0",
+      "source_file": "docs-site/docs/project/setup-deployment.md",
+      "heading": "Local Setup & Live Deployment > Run The Application Locally",
+      "text": "From the repository root:\n\n```bash\ndocker compose up -d\n```\n\nExpected local services:\n\n| Service | URL | Use |\n|---|---|---|\n| Frontend | `http://localhost:3000` | Researcher admin and participant survey runner |\n| Backend API | `http://localhost:8000` | FastAPI application |\n| Swagger | `http://localhost:8000/docs` | API exploration and smoke checks |\n| ReDoc | `http://localhost:8000/redoc` | API reference |\n\nFor host-based development:\n\n```bash\ndocker compose up db -d\ncd backend\npip install -r requirements.txt\nuvicorn app.main:app --reload\n```\n\nIn a second terminal:\n\n```bash\ncd frontend\nnpm install\nnpm run dev\n```",
+      "order": 0
+    },
+    {
+      "id": "docs-site/docs/project/setup-deployment.md::1",
+      "source_file": "docs-site/docs/project/setup-deployment.md",
+      "heading": "Local Setup & Live Deployment > Run This Documentation Site",
+      "text": "```bash\ncd docs-site\nnpm install\nnpm run dev\n```\n\nThe docs dev server runs on `http://localhost:2999`.\n\nBuild verification:\n\n```bash\ncd docs-site\nnpm run build\n```",
+      "order": 1
+    },
+    {
+      "id": "docs-site/docs/project/setup-deployment.md::2",
+      "source_file": "docs-site/docs/project/setup-deployment.md",
+      "heading": "Local Setup & Live Deployment > Local Smoke Test",
+      "text": "Before calling a build MVP-ready:\n\n1. Open the frontend and register or sign in as a researcher.\n2. Create a survey with a clear title, at least one condition, and calibration settings.\n3. Add at least one fetched or manually edited post card.\n4. Add question blocks covering the required question types for the study.\n5. Export/import a translation template and preview at least English and Chinese.\n6. Preview the survey for each condition and language combination that will be tested.\n7. Publish the survey and copy the share link.\n8. Open the share link in a fresh browser session.\n9. Select participant language, grant camera permission, complete calibration, interact with cards, answer questions, and submit.\n10. Confirm analytics update and export CSV/JSON with survey, condition, and language filters.",
+      "order": 2
+    },
+    {
+      "id": "docs-site/docs/project/setup-deployment.md::3",
+      "source_file": "docs-site/docs/project/setup-deployment.md",
+      "heading": "Local Setup & Live Deployment > Production Deployment",
+      "text": "The public CS14 demo is deployed on the Japan VM and exposed through Cloudflare Tunnel:\n\n| Endpoint | URL |\n|---|---|\n| Application | `https://cs14.kazelis.top/` |\n| Swagger / OpenAPI | `https://cs14.kazelis.top/docs` |\n| Public documentation | `https://cs14-docs.kazelis.top/` |\n\nThe custom domains terminate TLS at Cloudflare and route to the Caddy container over the tunnel. The VM's port 443 is occupied by an unrelated service, so direct Caddy HTTPS remains available only as a legacy fallback on port 8443.\n\nKeep these items checked before a client demo or redeploy:",
+      "order": 3
+    },
+    {
+      "id": "docs-site/docs/project/setup-deployment.md::4",
+      "source_file": "docs-site/docs/project/setup-deployment.md",
+      "heading": "Local Setup & Live Deployment > Production Deployment",
+      "text": "| Area | Checklist |\n|---|---|\n| Server | Japan host reachable by SSH, disk space checked, Docker stack healthy. |\n| Runtime | Backend, frontend, PostgreSQL, Caddy, and Cloudflare Tunnel containers running. |\n| Environment | Backend secret key, database URL, allowed origins, frontend API base URL, HTTPS domains, and tunnel token present on the server only. |\n| Database | Production PostgreSQL volume retained, Alembic migration command tested before major changes, backup path defined before destructive migration work. |\n| HTTPS | Browser camera APIs require secure context outside localhost, so participant links must use the Cloudflare HTTPS domain. |\n| CORS | `https://cs14.kazelis.top` must be explicitly allowed by the backend. |\n| Smoke test | Register/login, create survey, metadata fetch/manual card, publish, participant run, calibration, analytics, CSV export, JSON export. |",
+      "order": 4
+    },
+    {
+      "id": "docs-site/docs/project/setup-deployment.md::5",
+      "source_file": "docs-site/docs/project/setup-deployment.md",
+      "heading": "Local Setup & Live Deployment > Production Deployment",
+      "text": "| Smoke test | Register/login, create survey, metadata fetch/manual card, publish, participant run, calibration, analytics, CSV export, JSON export. |\n| Rollback | Previous image/tag retained, database backup captured before migration, logs accessible. |",
+      "order": 5
+    },
+    {
+      "id": "docs-site/docs/project/setup-deployment.md::6",
+      "source_file": "docs-site/docs/project/setup-deployment.md",
+      "heading": "Local Setup & Live Deployment > Production Deployment",
+      "text": "The deployment should not be treated as ready for a meeting unless the public frontend can reach the public API, camera calibration works in a real participant browser over HTTPS, and exports can be downloaded from the deployed admin interface.",
+      "order": 6
+    }
+  ]
+}
