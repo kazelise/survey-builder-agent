@@ -209,6 +209,12 @@ writing (6 rules):
 
 Language/AB heuristics (bilingual detection, "点赞/likes" → `group_overrides`) live in `prompts.py::LANGUAGE_AB_HEURISTICS`, a separate string appended after the frozen prefix so tuning them doesn't invalidate a cached prefix.
 
+The same block also spells out the `platform_style` vs `platform_ui_style` split — easy to get wrong because the two fields look interchangeable but use **different enums** (both are set once at `create_survey` and locked after publish, per §3):
+- `platform_style`: `x | facebook | instagram | xiaohongshu`.
+- `platform_ui_style`: `twitter | facebook | instagram | xiaohongshu | truth_social | bluesky | douyin`.
+
+Mapping rules baked into the prompt: 推特/X → style `x` + ui `twitter`; 小红书 → style `xiaohongshu` + ui `xiaohongshu`; 抖音 → style `xiaohongshu` + ui `douyin`; not stated → style `x` + ui `twitter`. The two vocabularies are never copied 1:1 from each other.
+
 ---
 
 ## 7. Tool catalog (13 — few and precise)
