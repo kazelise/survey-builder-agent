@@ -10,7 +10,7 @@
 | R2 | 30/39（77%） | 36/39 | ①题目工具描述与系统提示锐化 ②拒答判分词表扩充（修判分器冤案） ③error_recovery 真模型模式接受"一次做对" ④"禁止反问澄清、按默认行动"启发式 |
 | R3 | 29/39（74%） | **38/39（97%）** | ①题目放置改为对称规则（跟随措辞） ②"未要求不发布" ③越权请求直接拒、禁走手册绕行 |
 
-各轮完整明细：`REPORT-real-v4flash-baseline.md` / `REPORT-real-v4flash-round2.md` / `REPORT.md`（R3）。mock 回归在每轮修改后均保持 39/39，单元测试 26/26。
+各轮完整明细：`REPORT-real-v4flash-baseline.md`（R1）/ `REPORT-real-v4flash-round2.md`（R2）。R3 的 real-model 逐用例明细报告未保留归档（`REPORT-real-v4flash-round3.md` 不存在于仓库中），仅上表的两个聚合数字（29/39 严格通过、38/39 任务终态正确）有记录。`REPORT.md` 是 mock 回归报告（39/39），不是 R3 的 real-model 明细，此前的引用容易被误读为同一份文件，特此澄清。mock 回归在每轮修改后均保持 39/39，单元测试 26/26。
 
 ## 失败模式分类（跨三轮）
 
