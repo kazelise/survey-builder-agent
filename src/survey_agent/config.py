@@ -44,10 +44,16 @@ class Settings:
     anthropic_base_url: str | None = None
     max_tokens: int = 8000
 
-    # cs14 backend
-    cs14_base_url: str = "http://localhost:8000"
+    # cs14 backend. Must include the /api/v1 prefix -- http_client.py calls
+    # relative paths like "/auth/login" with no prefix added internally, so
+    # a base_url without it 404s on every single call (see .env.example and
+    # VERIFY.md's "Bug found during smoke test"). cs14_password mirrors the
+    # backend seed script's actual default (DEMO_RESEARCHER_PASSWORD), not
+    # an arbitrary placeholder -- a mismatch here is a 401 login loop, not
+    # just a cosmetic default.
+    cs14_base_url: str = "http://localhost:8000/api/v1"
     cs14_email: str = "cs14.demo@example.com"
-    cs14_password: str = "demo-password-123"
+    cs14_password: str = "change-me-client-demo"
 
     # Agent loop
     max_turns: int = 20
@@ -71,9 +77,9 @@ class Settings:
             model=os.environ.get("MODEL", DEFAULT_MODEL),
             anthropic_api_key=os.environ.get("ANTHROPIC_API_KEY"),
             anthropic_base_url=os.environ.get("ANTHROPIC_BASE_URL"),
-            cs14_base_url=os.environ.get("CS14_BASE_URL", "http://localhost:8000"),
+            cs14_base_url=os.environ.get("CS14_BASE_URL", "http://localhost:8000/api/v1"),
             cs14_email=os.environ.get("CS14_EMAIL", "cs14.demo@example.com"),
-            cs14_password=os.environ.get("CS14_PASSWORD", "demo-password-123"),
+            cs14_password=os.environ.get("CS14_PASSWORD", "change-me-client-demo"),
         )
         for key, value in overrides.items():
             if value is not None:

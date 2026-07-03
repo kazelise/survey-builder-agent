@@ -150,7 +150,7 @@ uv run survey-agent "..." --base-url https://my-proxy/v1 --model some-model
 - `MODEL` — 默认模型 ID（默认 `claude-opus-4-8`）
 - `CS14_BASE_URL` — cs14 后端 API 根（默认 `http://localhost:8000/api/v1`，注意必须带 `/api/v1` 前缀）
 - `CS14_EMAIL` — 研究者邮箱（默认 `cs14.demo@example.com`）
-- `CS14_PASSWORD` — 研究者密码（默认 `demo_password`）
+- `CS14_PASSWORD` — 研究者密码（默认 `change-me-client-demo`，与后端 seed 脚本的实际默认值一致）
 
 ---
 

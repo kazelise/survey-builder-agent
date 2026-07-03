@@ -75,6 +75,18 @@ following the example verbatim gets a 401 loop. Not fixed in this pass (out of
 scope for "verify", flagged for a follow-up commit) — `agent/.env` used locally
 has the corrected value.
 
+**Update (2026-07-03):** Both halves of this bug are now fixed. `.env.example`
+was corrected at some point after this verification run
+(`CS14_BASE_URL=http://localhost:8000/api/v1`,
+`CS14_PASSWORD=change-me-client-demo`), but `config.py`'s hardcoded `Settings`
+dataclass defaults and `from_env()`'s fallback values still reproduced the
+*original* wrong values (`http://localhost:8000` with no `/api/v1`,
+`demo-password-123`) — so anyone constructing `Settings()` directly, or
+running `from_env()` with no `.env`/env vars set, still hit both the 404 and
+the 401 loop described above even after `.env.example` was corrected.
+`config.py`'s defaults now match `.env.example`; regression-tested in
+`tests/test_config.py`.
+
 ## 3. Eval suite (mock mode, full run)
 
 ```
