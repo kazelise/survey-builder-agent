@@ -31,7 +31,7 @@ class EmbeddingClient(Protocol):
     """Structural type both `OllamaEmbeddingClient` and test fakes satisfy
     -- rag/index.py depends on this, not the concrete Ollama client, so
     tests can inject a deterministic fake with zero network (see
-    tests/test_handbook_index.py / tests/test_handbook_tool.py)."""
+    tests/test_handbook_tool.py's FakeEmbedder)."""
 
     def available(self) -> bool: ...
 
