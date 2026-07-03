@@ -11,6 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
+from .http_client import RETRYABLE_STATUS
+
 
 @dataclass
 class ToolUse:
@@ -43,9 +45,13 @@ class Model(Protocol):
 
 
 class ModelUnavailableError(RuntimeError):
-    """Raised when a real model call fails after SDK-level retries are
-    exhausted (rate limit, 5xx, refusal never reaching content[0]). loop.py
-    catches this to drive the fallback-model path (DESIGN.md §10)."""
+    """Raised when a real model call fails in a way that's plausibly
+    transient after SDK-level retries are exhausted (rate limit, 5xx, a
+    dropped connection) -- NOT for permanent 4xx failures (bad request
+    shape, invalid API key, ...), which propagate as their original
+    anthropic exception type instead so they aren't silently retried via
+    the fallback model. loop.py catches this to drive the fallback-model
+    path (DESIGN.md §10)."""
 
 
 class RealModel:
@@ -90,12 +96,20 @@ class RealModel:
                 tools=tools,
                 tool_choice={"type": "auto"},
             )
-        except (
-            self._anthropic.RateLimitError,
-            self._anthropic.APIStatusError,
-            self._anthropic.APIConnectionError,
-        ) as exc:
+        except self._anthropic.APIConnectionError as exc:
             raise ModelUnavailableError(str(exc)) from exc
+        except self._anthropic.APIStatusError as exc:
+            # APIStatusError is the base class for EVERY non-2xx response
+            # (400/401/403/404/409/422 as well as 429/5xx) -- only the
+            # retryable-shaped ones (same RETRYABLE_STATUS set http_client.py
+            # uses) count as "model unavailable". A permanent 4xx (bad
+            # request, invalid key, ...) propagates as-is: retrying an
+            # identical request via the fallback model can't fix it, and
+            # doing so would burn that one-shot fallback attempt for
+            # nothing (loop.py's _complete_with_fallback).
+            if exc.status_code in RETRYABLE_STATUS:
+                raise ModelUnavailableError(str(exc)) from exc
+            raise
 
         raw_content = [block.model_dump() for block in resp.content]
         text_parts = [b["text"] for b in raw_content if b.get("type") == "text"]
