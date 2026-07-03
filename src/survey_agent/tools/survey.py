@@ -146,9 +146,24 @@ def publish_survey(ctx, args: dict) -> dict:
 
 
 def get_share_link(ctx, args: dict) -> dict:
-    """Local-only tool: builds the link from RunContext, no HTTP call."""
+    """Local-only tool: builds the link from RunContext, no HTTP call.
+
+    Scoped to the single survey this run has built/loaded — RunContext
+    tracks exactly one survey_id at a time (context.py). `survey_id` is
+    required in the schema so the model states which survey it means, but
+    a mismatch against ctx.run.survey_id must be a loud ToolError, not a
+    silent fallback to whatever survey RunContext happens to hold — that
+    would return a *different* survey's real share_code with is_error=false.
+    """
     if ctx.run.share_code is None:
         raise ToolError("No share_code known yet — call create_survey (and publish_survey) first.")
+    survey_id = args["survey_id"]
+    if survey_id != ctx.run.survey_id:
+        raise ToolError(
+            f"get_share_link only has state for survey_id={ctx.run.survey_id} (the survey this run "
+            f"built/loaded), not survey_id={survey_id}. Call get_survey({survey_id}) first if you "
+            "need this run to switch onto a different survey."
+        )
     language = args.get("language")
     return {"share_link": ctx.run.share_link(language), "share_code": ctx.run.share_code}
 
