@@ -5,6 +5,7 @@ while it's happening, and diffable across runs. Event catalog: DESIGN.md §9.
 from __future__ import annotations
 
 import json
+import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -14,15 +15,27 @@ class Tracer:
     def __init__(self, path: str | None):
         self._path = Path(path) if path else None
         self._fh = None
+        self._write_failed = False
         if self._path is not None:
             self._path.parent.mkdir(parents=True, exist_ok=True)
             self._fh = self._path.open("a", encoding="utf-8")
 
     def _write(self, event: dict[str, Any]) -> None:
         event.setdefault("ts", time.time())
-        if self._fh is not None:
+        if self._fh is None:
+            return
+        try:
             self._fh.write(json.dumps(event, default=str, ensure_ascii=False) + "\n")
             self._fh.flush()  # a crash mid-run should still leave a readable trace
+        except (OSError, ValueError) as exc:
+            # Tracing is a side-channel (module docstring), not part of the
+            # build chain's correctness — a disk-full, permission, NFS, or
+            # log-rotation hiccup on the trace file must never abort an
+            # otherwise-successful run. Warn once (so the failure isn't
+            # silent) and keep going without tracing for the rest of the run.
+            if not self._write_failed:
+                self._write_failed = True
+                print(f"[trace] disabled after write failure: {type(exc).__name__}: {exc}", file=sys.stderr)
 
     def run_start(self, instruction: str, model: str, base_url: str | None, mock: bool) -> None:
         self._write(
@@ -76,4 +89,7 @@ class Tracer:
 
     def close(self) -> None:
         if self._fh is not None:
-            self._fh.close()
+            try:
+                self._fh.close()
+            except OSError as exc:
+                print(f"[trace] error closing trace file: {exc}", file=sys.stderr)
