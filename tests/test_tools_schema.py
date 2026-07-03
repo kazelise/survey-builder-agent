@@ -1,9 +1,9 @@
 """Sanity checks on the shared tool schema source (tools/__init__.py::TOOLS).
 
-This is the seam a future MCP server would reuse verbatim (DESIGN.md §11) —
-not implemented in this pass, but these tests lock down the invariants that
-reuse depends on: unique names, strict schemas, and every `required` key
-actually present in `properties`.
+This is the seam the MCP server (``mcp_server.py``) reuses verbatim
+(DESIGN.md §11) — these tests lock down the invariants that reuse depends
+on: unique names, strict schemas, and every `required` key actually
+present in `properties`.
 """
 
 from __future__ import annotations

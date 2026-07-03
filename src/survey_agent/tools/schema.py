@@ -1,11 +1,11 @@
 """Single source of truth for tool definitions.
 
 ``ToolSpec`` bundles a JSON Schema input contract with the handler that
-executes it. ``anthropic_tools()`` renders the list for the SDK loop. A
-future MCP server would iterate the same ``TOOLS`` list (see
-``tools/__init__.py``) and register each handler under ``@mcp.tool()`` — this
-module is written so that's a pure addition, not a refactor, even though the
-MCP server itself is out of scope for this pass.
+executes it. ``anthropic_tools()`` renders the list for the SDK loop; the
+MCP server (``mcp_server.py``) iterates the same ``TOOLS`` list (see
+``tools/__init__.py``) and registers each spec's name/description/
+input_schema directly against the low-level MCP ``Server`` API — nothing
+here gets redefined or re-derived by either caller.
 """
 
 from __future__ import annotations

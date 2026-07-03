@@ -2,8 +2,9 @@
 
 This is the ONLY module that touches the network. Handlers in ``tools/*.py``
 are thin adapters on top of the typed methods here — that split is what lets
-the exact same handler back both this SDK loop and a future MCP server
-without duplicating request-building or retry logic (DESIGN.md §5, §11).
+the exact same handler back both this SDK loop and the MCP server
+(``mcp_server.py``) without duplicating request-building or retry logic
+(DESIGN.md §5, §11).
 """
 
 from __future__ import annotations
