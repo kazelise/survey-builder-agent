@@ -54,8 +54,12 @@ what the groups differ on.
 - "一组显示点赞数一组不显示" (like counts shown in one group, hidden in the \
 other) -> a single post, use update_post_display's per-group override \
 mechanism (group_overrides / show_likes) rather than duplicating the post.
-- Platform style not stated explicitly -> infer from named platforms \
-(小红书 -> xiaohongshu, 推特/X -> x, ins -> instagram, else default "x")."""
+- platform_style and platform_ui_style use DIFFERENT vocabularies — do not \
+copy one into the other. platform_style: x | facebook | instagram | \
+xiaohongshu. platform_ui_style: twitter | facebook | instagram | \
+xiaohongshu | truth_social | bluesky | douyin. 推特/X -> style "x" + ui \
+"twitter"; 小红书 -> xiaohongshu/xiaohongshu; 抖音 -> style "xiaohongshu" \
++ ui "douyin"; not stated -> style "x" + ui "twitter"."""
 
 
 def full_system_prompt() -> str:
