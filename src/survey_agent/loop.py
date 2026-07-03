@@ -90,7 +90,7 @@ def run(
             "cache_read": resp.usage.cache_read_tokens,
             "cache_creation": resp.usage.cache_creation_tokens,
         }
-        price = settings.price_for(getattr(active_model, "_model", settings.model))
+        price = settings.price_for(active_model.model_id)
         cost = estimate_cost(usage, price)
         tracer.round(turn, len(messages), len(tools), usage, latency_ms, cost)
         emit("round", {"turn": turn, "usage": usage, "latency_ms": latency_ms})

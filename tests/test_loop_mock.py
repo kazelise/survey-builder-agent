@@ -93,6 +93,7 @@ class _FixedStopReasonModel:
     def __init__(self, stop_reason: str, text: str = "partial answer"):
         self._stop_reason = stop_reason
         self._text = text
+        self.model_id = "stub"  # satisfies the Model protocol's cost-lookup accessor
 
     def complete(self, system, messages, tools):
         return ModelResponse(
@@ -175,6 +176,7 @@ class _AlwaysFailModel:
 
     def __init__(self):
         self.calls = 0
+        self.model_id = "always-fail"  # satisfies the Model protocol's cost-lookup accessor
 
     def complete(self, system, messages, tools):
         self.calls += 1
@@ -245,6 +247,30 @@ def test_no_fallback_model_configured_reports_model_unavailable_after_one_try():
 
     assert result.reason == "model_unavailable"
     assert primary.calls == 1
+
+
+def test_cost_price_lookup_uses_the_active_models_own_model_id_not_settings_default():
+    # Regression: loop.py computed cost via
+    # settings.price_for(getattr(active_model, "_model", settings.model))
+    # -- the Model Protocol has no model-id accessor, so for any
+    # implementation without a private `_model` attribute (MockModel had
+    # none), pricing silently fell back to settings.model (the *default*
+    # model id) regardless of what model was actually active, mis-
+    # attributing cost whenever the active model differs from the default.
+    calls: list[str | None] = []
+    settings = Settings(max_turns=3, model="claude-opus-4-8")  # deliberately NOT the mock's model_id below
+    orig_price_for = settings.price_for
+    settings.price_for = lambda model=None: (calls.append(model), orig_price_for(model))[1]
+
+    model = MockModel([{"final": "done"}], model_id="claude-haiku-4-5")
+    client = CS14Client(base_url="http://unused", dry_run=True)
+    ctx = HandlerContext(client=client, run=RunContext())
+    executor = ToolExecutor(TOOLS, ctx, result_max_chars=4000)
+    tracer = Tracer(None)
+
+    run("x", "system", model, anthropic_tools(TOOLS), executor, ctx, settings, tracer)
+
+    assert calls == ["claude-haiku-4-5"]
 
 
 def test_trim_context_keeps_first_message_and_recent_rounds():

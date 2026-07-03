@@ -41,6 +41,13 @@ class ModelResponse:
 
 
 class Model(Protocol):
+    # A stable, public model-id accessor every implementation must expose
+    # (used by loop.py for cost-price lookup) -- deliberately part of the
+    # protocol instead of callers reflecting on an implementation-private
+    # attribute like RealModel's old `_model`, which silently broke cost
+    # attribution for any Model without one (MockModel had none).
+    model_id: str
+
     def complete(self, system: str, messages: list[dict], tools: list[dict]) -> ModelResponse: ...
 
 
@@ -76,7 +83,7 @@ class RealModel:
     ):
         import anthropic  # imported lazily: --mock runs must work without the SDK reaching out anywhere
 
-        self._model = model
+        self.model_id = model
         self._max_tokens = max_tokens
         kwargs: dict[str, Any] = {}
         if api_key:
@@ -89,7 +96,7 @@ class RealModel:
     def complete(self, system: str, messages: list[dict], tools: list[dict]) -> ModelResponse:
         try:
             resp = self._client.messages.create(
-                model=self._model,
+                model=self.model_id,
                 max_tokens=self._max_tokens,
                 system=system,
                 messages=messages,
@@ -150,10 +157,15 @@ class MockModel:
         from the loop.
     """
 
-    def __init__(self, script: list[Any]):
+    def __init__(self, script: list[Any], model_id: str = "mock"):
         self._script = list(script)
         self._pos = 0
         self._next_id = 0
+        # Satisfies the Model protocol's model_id accessor (used for
+        # cost-price lookup in loop.py); mock runs report zero usage
+        # anyway, but a caller that wants to exercise price_for() with a
+        # specific model id can pass one in.
+        self.model_id = model_id
 
     def complete(self, system: str, messages: list[dict], tools: list[dict]) -> ModelResponse:
         if self._pos >= len(self._script):
