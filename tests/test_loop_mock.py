@@ -9,7 +9,7 @@ from survey_agent.context import HandlerContext, RunContext
 from survey_agent.executor import ToolExecutor
 from survey_agent.http_client import CS14Client
 from survey_agent.loop import run, trim_context
-from survey_agent.model import MockModel, ModelResponse, Usage
+from survey_agent.model import ModelResponse, ModelUnavailableError, MockModel, Usage
 from survey_agent.tools import TOOLS
 from survey_agent.tools.schema import anthropic_tools
 from survey_agent.trace import Tracer
@@ -162,6 +162,89 @@ def test_refusal_stop_reason_terminates_the_run_with_no_final_text():
     assert result.final_text is None
     assert result.turns == 1
     assert result.state["status"] is None  # no survey was ever built
+
+
+class _AlwaysFailModel:
+    """Model double that raises ModelUnavailableError on every call --
+    stands in for a primary model that's completely down. MockModel can
+    never raise ModelUnavailableError, and RealModel needs a live network
+    call to trigger it, so loop.py's _complete_with_fallback (the
+    fallback-model switch) had zero test coverage without a stub like
+    this one.
+    """
+
+    def __init__(self):
+        self.calls = 0
+
+    def complete(self, system, messages, tools):
+        self.calls += 1
+        raise ModelUnavailableError("simulated primary-model outage")
+
+
+def test_fallback_model_completes_the_run_after_primary_becomes_unavailable():
+    primary = _AlwaysFailModel()
+    fallback_script = [
+        {"tool_use": [{"name": "create_survey", "input": {
+            "title": "T", "default_language": "en", "supported_languages": ["en"],
+        }}]},
+        {"tool_use": [{"name": "add_post", "input": {"survey_id": 1, "original_url": "https://x.com/1", "order": 1}}]},
+        {"tool_use": [{"name": "publish_survey", "input": {"survey_id": 1}}]},
+        {"final": "Done via fallback. Share link: /survey/dry0001?lang=en"},
+    ]
+    fallback = MockModel(fallback_script)
+    _, executor, ctx, settings, tracer = _build([])  # script unused: primary is the model under test
+    settings.max_turns = 10
+
+    events: list[tuple[str, dict]] = []
+    result = run(
+        "build me a survey",
+        "system",
+        primary,
+        anthropic_tools(TOOLS),
+        executor,
+        ctx,
+        settings,
+        tracer,
+        on_event=lambda kind, payload: events.append((kind, payload)),
+        fallback_model=fallback,
+    )
+
+    assert result.reason == "done"
+    assert result.state["status"] == "published"
+    assert "Done via fallback" in result.final_text
+    assert primary.calls == 1  # tried once, then never retried again -- "stays switched"
+    fallback_events = [p for k, p in events if k == "model_fallback"]
+    assert len(fallback_events) == 1
+    assert fallback_events[0]["turn"] == 0
+
+
+def test_fallback_model_also_unavailable_reports_model_unavailable():
+    primary = _AlwaysFailModel()
+    fallback = _AlwaysFailModel()
+    _, executor, ctx, settings, tracer = _build([])
+
+    result = run(
+        "build me a survey", "system", primary, anthropic_tools(TOOLS), executor, ctx, settings, tracer,
+        fallback_model=fallback,
+    )
+
+    assert result.reason == "model_unavailable"
+    assert result.final_text is None
+    assert primary.calls == 1
+    assert fallback.calls == 1
+
+
+def test_no_fallback_model_configured_reports_model_unavailable_after_one_try():
+    primary = _AlwaysFailModel()
+    _, executor, ctx, settings, tracer = _build([])
+
+    result = run(
+        "build me a survey", "system", primary, anthropic_tools(TOOLS), executor, ctx, settings, tracer,
+        fallback_model=None,
+    )
+
+    assert result.reason == "model_unavailable"
+    assert primary.calls == 1
 
 
 def test_trim_context_keeps_first_message_and_recent_rounds():
